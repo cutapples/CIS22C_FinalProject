@@ -26,7 +26,7 @@ public:
 	~BST();
 	//returns true if empty and false if not empty.
 	bool isEmpty();
-	int size(Node<T>* root);
+	//int size(Node<T>* root);
 	//creates a new leaf and inserts into the tree as sorted from left to right.
 	void insert(T newData);
 	//removes the node that contains the data and accounts for if 0 children, 1 children, or 2 children.
@@ -100,16 +100,16 @@ void BST<T>::insert(T newData) // insert from left to right.
 	else //if not, insert data as a leaf node.
 	{
 		Node<T>* temp = root;
-		while(temp) //find the parent node.
+		while(temp) //find the parent node until we reach NULL
 		{
 			parent = temp;
 			if(newLeaf->data > temp->data)
 			{
-				temp = temp->right;
+				temp = temp->right; //move to the right
 			}
 			else
 			{
-				temp = temp->left;
+				temp = temp->left; //move to the left
 			}
 		}
 		if(newLeaf->data < parent->data)
@@ -134,9 +134,9 @@ void BST<T>::remove(T oldData)
 	Node<T>* temp = root;
 	Node<T>* parent = NULL;
 	bool found = false;
-	while(temp != NULL)
+	while(temp != NULL) //find the specified data until NULL
 	{
-		if (temp->data == oldData) //find the specified data.
+		if (temp->data == oldData) 
 		{
 			found = true;
 			break;
@@ -168,7 +168,7 @@ void BST<T>::remove(T oldData)
 	//Case 1: if statement is checking if node has 0 children.
 	if (temp->left == NULL && temp->right == NULL)
 	{
-		if (parent->left == temp)
+		if (parent->left == temp) 
 		{
 			parent->left = NULL;
 		}
@@ -430,8 +430,8 @@ void BST<T>::clearRecursive(Node<T>* root)
 	clearRecursive(root->left);
 	//goes through each node and deletes the right nodes.
 	clearRecursive(root->right);
-	//delete root;
-	root = NULL;
+	delete root;	//deletes the node at the end of each recursion after going through each parent to child node.
+	//root = NULL;
 	//root->left = NULL;
 	//root->right = NULL;
 	//root->data = NULL;
@@ -449,17 +449,17 @@ bool BST<T>::isEmpty()
 	//{
 	//	return false;
 	//}
-	if (root == NULL)
+	if (root == NULL) //might need to change name to isNotEmpty() and change these 2 returns to false if checks are not correct.
 	{
-		return false;
+		return true;
 	}
 	else if (root->data != NULL)
 	{
-		return false;
+		return true;
 	}
 	else
 	{
-		return true;
+		return false;
 	}
 }
 
