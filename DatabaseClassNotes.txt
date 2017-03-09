@@ -1,0 +1,40 @@
+Database.h
+#include "HashTable.h"
+
+template <class T>
+class Database {
+	HashTable<T>  hashTable
+	BST<T> binarySearchTree
+	T[5] teamList;
+	int gold;
+
+public:
+	Database(fstream& saveFile);
+
+	void purchaseNewHero();
+	void sellHero(double primaryKey);
+	void displayHeroList();
+	//Party Menu Function?
+	//Adding custom data
+	//Search Hero by primary key
+	//List data by key (display hero list?)
+	//Print indented tree
+	//Display efficiency stats
+
+	void insert(T data, HashTable& hashTable, BST& binarySearchTree);
+	void delete(double primaryKey, HashTable& hashTable, BST& binarySearchTree);
+	bool search(double primaryKey, &hashTable);
+	
+
+
+
+
+
+
+
+
+
+
+
+
+};
