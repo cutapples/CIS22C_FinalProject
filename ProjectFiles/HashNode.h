@@ -3,15 +3,17 @@
 
 #include "SmashHero.h"
 
-struct HashNode {
+using namespace std;
+
+class HashNode {
 public:
 	SmashHero* data;
 	HashNode* next;
 	HashNode* prev;
-	
+
 	HashNode();
 	HashNode(SmashHero* data, HashNode* next, HashNode* prev);
-}
+};
 
 HashNode::HashNode(){
 	this->data = nullptr;
@@ -19,7 +21,7 @@ HashNode::HashNode(){
 	this->prev = nullptr;
 }
 
-HashTable::HashNode(SmashHero* data, HashNode* next, HashNode* prev){
+HashNode::HashNode(SmashHero* data, HashNode* next, HashNode* prev){
 	this->data = data;
 	this->next = next;
 	this->prev = prev;
