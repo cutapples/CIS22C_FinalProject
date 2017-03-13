@@ -72,7 +72,7 @@ bool operator<(SmashHero hero, double userKey){
 }
 
 bool operator==(SmashHero hero, double userKey){
-	return() // still need to add the return argument
+	return(hero.primaryKey == userKey); // still need to add the return argument
 }
 
-#endif SMASHHE
+#endif SMASHHERO_H
