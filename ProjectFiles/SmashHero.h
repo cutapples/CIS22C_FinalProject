@@ -30,27 +30,49 @@ public:
 		SmashHero::setRarity(stoi(rarity));
 	};
 
+	double getPrimaryKey(){ return this->primaryKey; };
+	string getHeroName(){ return this->heroName; };
+	int getRarityIndex(){ return this->rarityIndex; };
+
 	void setPrimaryKey(double primaryKey) { this->primaryKey = primaryKey; };
 	void setHeroName(string heroName) { this->heroName = heroName; };
 	void setRarity(int rarityIndex){ this->rarityIndex = rarityIndex; };
 	friend ostream& operator<<(ostream& os, SmashHero& hero){
 
 		//Case being used if the Heroes are being output to the screen.
-		if(&os == &cout){
+		if (&os == &cout){
 
 
 		}
 
 		// Case being used if the heroes are going to be saved into a file
-			os << hero.primaryKey << "\t";
-			os << hero.heroName << "\t";
-			os << hero.rarityIndex << "\t";
-		
+		os << hero.primaryKey << "\t";
+		os << hero.heroName << "\t";
+		os << hero.rarityIndex << "\t";
 
-			return os;
+
+		return os;
 	}
 
+	friend bool operator>(SmashHero, double);
+	friend bool operator==(SmashHero, double);
+
+
+	
 
 };
 
-#endif SMASHHERO_H
+bool operator>(SmashHero hero, double userKey){
+	return (hero.getPrimaryKey > userKey);
+
+}
+
+bool operator<(SmashHero hero, double userKey){
+	return(hero.getPrimaryKey < userKey);
+}
+
+bool operator==(SmashHero hero, double userKey){
+	return() // still need to add the return argument
+}
+
+#endif SMASHHE
