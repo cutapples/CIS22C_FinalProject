@@ -1,7 +1,9 @@
 #include <iostream>
 #include <string>
+#include <fstream>
 #include "BST.h"
 #include "HashTable.h"
+#include "Database.h"
 #include "SmashHero.h"
 
 using namespace std;
@@ -11,9 +13,13 @@ void battleMenu();
 void purchaseMenu();
 void sellMenu();
 void heroListMenu();
-void partyMenu();
 void optionsMenu();
 */
+
+void displayLoadingScreen();
+void displayMainMenu();
+
+void teamMenu(Database<SmashHero*>& database);
 
 /*
 void loadSave(fstream& saveFile, BST& heroTree, HashTable& heroDatabase);
@@ -31,17 +37,25 @@ void saveToFile(fstream& saveFile, HashTable& heroDatabase);
 
 int main() {
 
+	displayLoadingScreen();
+	fstream saveFile("SaveFile.txt");
+	if (saveFile.fail()){
+		cout << "Error: Save file not found.\nCreating empty save file.\n";
+		saveFile.close();
+		saveFile.open("SaveFile.txt", ios::out);
+		saveFile.close();
+		saveFile.open("SaveFile.txt");
+		cout << "Empty save file created.\n";
+	}
+	Database<SmashHero*> database(saveFile);
+	cout << "Database successfully intialized.\n";
+	
+	system("pause");
+
 	bool ExitMainMenu = false;
 
 	do {
-		cout << "====================Main Menu====================" << endl;
-		cout << "1. To Battle!" << endl;
-		cout << "2. Purchase New Hero" << endl;
-		cout << "3. Sell Hero" << endl;
-		cout << "4. Hero List" << endl;
-		cout << "5. Party Menu" << endl;
-		cout << "6. Options Menu" << endl;
-		cout << "7. Exit Game" << endl << endl;
+		displayMainMenu();
 
 		int userChoice;
 
@@ -58,6 +72,7 @@ int main() {
 			Return gold value?
 			Different missions?
 			*/
+			
 			break;
 		case 2:
 			/*
@@ -83,11 +98,13 @@ int main() {
 			break;
 		case 5:
 			/*
+			Team List Menu
 			5 hero array display function call
 			Prompt user for which slot they want to replace
 			Prompt user for a primary key they own to be put into that slot
 			Replace heroArray[slot] with database->heroList[primaryKey]
 			*/
+			teamMenu(database);
 			break;
 		case 6:
 			//optionsMenu();
@@ -98,6 +115,9 @@ int main() {
 		default:
 			break;
 		}
+
+		system("pause");
+		system("cls");
 		
 	} while (!ExitMainMenu);
 
@@ -105,6 +125,38 @@ int main() {
 	return 0;
 }
 
+
+void displayLoadingScreen() {
+	cout << "===================Smash Heroes==================\n";
+	cout << "Loading...\n";
+	cout << "Loading SaveFile.txt...\n";
+}
+
+void displayMainMenu() {
+	cout << "====================Main Menu====================" << endl;
+	cout << "1. To Battle!" << endl;
+	cout << "2. Purchase New Hero" << endl;
+	cout << "3. Sell Hero" << endl;
+	cout << "4. Hero List" << endl;
+	cout << "5. Party Menu" << endl;
+	cout << "6. Options Menu" << endl;
+	cout << "7. Exit Game" << endl << endl;
+}
+
+void teamMenu(Database<SmashHero*>& database) {
+	database.displayTeam();
+	cout << "\nWhich slot would you like to swap?(6 for exit)";
+	int slotChoice;
+	cin >> slotChoice;
+	if (slotChoice == 6) {
+		return;
+	}
+	cout << "\nWhat hero would you like to put in slot " << slotChoice << "?(Enter hero key) ";
+	double swapKey;
+	cin >> swapKey;
+	cout << "\n\nYou swapped in this hero into slot " << slotChoice << "!\n";
+	database.displayHero(swapKey);
+}
 
 //void optionsMenu() {
 //cout << "=================Options Menu====================" << endl;

@@ -16,7 +16,7 @@ template <class T>
 class Database {
 private:
 	fstream saveFile; //The file used to load and save data from
-	HashTable<T> hashTable; //Hashtable of currently owned Heroes
+	HashTable hashTable; //Hashtable of currently owned Heroes
 	BST<T> binarySearchTree; //Sorted tree of currently owned Heroes
 	double teamList[5]; //primaryKeys of last used Team
 	int gold; //Gold value gained through doing battles
@@ -35,6 +35,8 @@ public:
 	void displayEfficiency();
 	void saveToFile();
 	void insertNewHero(T data);
+	void displayTeam();
+	void displayHero(double primaryKey);
 
 	~Database();
 };
@@ -47,11 +49,14 @@ Database<T>::Database(fstream& saveFile) {
 	Create hash table using next best prime number
 	Load gold and team list (still thinking of how this can be done
 	Load rest of file into the hashTable and binarySearchTree
-		Loop while not at the end of file
-		Get line until new line, store into temp string
-		Make temp SmashHero pointer and create a new SmashHero using the constructor that takes an attribute string
-		insert temp SmashHero pointer using Database::insertNewHero
+	Loop while not at the end of file
+	Get line until new line, store into temp string
+	Make temp SmashHero pointer and create a new SmashHero using the constructor that takes an attribute string
+	insert temp SmashHero pointer using Database::insertNewHero
 	*/
+
+	this->saveFile = saveFile;
+
 }
 
 //Purchases a new hero by RNG
@@ -65,6 +70,34 @@ void Database<T>::purchaseNewHero() {
 	Create new SmashHero object at a pointer passing in the attribute string for the constructor
 	Call insertNewHero function
 	*/
+	//Removing gold cost
+	this->gold -= 100;
+
+	//Generating a random number to pull from the hero list
+	srand(time(NULL));
+	double rngesus = rand() % 100 + 1;
+	if (rngesus > 98) {
+		rngesus = rand() % 6;
+	}
+	else if (rngesus > 85) {
+		rngesus = rand() % 3 + 6;
+	}
+	else if (rngesus > 60) {
+		rngesus = rand() % 24 + 9;
+	}
+	else {
+		rngesus = rand() % 24 + 33;
+	}
+
+	//Finding the hero in the hero list and creating it
+	string line;
+	this->saveFile.seekg(saveFile.beg);
+	for (int i = 0; i > rngesus; i++) {
+		getline(saveFile, line);
+	}
+	SmashHero* tempPtr = new SmashHero(line);
+
+	//Insert new hero into the Hash Table and BST
 }
 
 //Removes a hero from the database by primaryKey
@@ -77,6 +110,17 @@ void Database<T>::sellHero(double primaryKey) {
 	(If theres gold values associated with heroes, increase gold)
 	Delete temp
 	*/
+	char sellConfirmation;
+	SmashHero* tempPtr = hashTable.getItem(primaryKey);
+	if (tempPtr != nullptr) {
+		cout << *tempPtr;
+		cout << "Would you like to delete this hero?(Y/N) ";
+		cin >> sellConfirmation;
+		if (sellConfirmation == 'Y' || sellConfirmation == 'y') {
+			//Call hashTable delete function
+			//hashTable.deleteItem(tempPtr);
+		}
+	}
 }
 
 //Displays the hero list in the hash table sequence
@@ -151,6 +195,18 @@ void Database<T>::insertNewHero(T data) {
 	/*
 	Calls the HashTable and BST insert functions passing in the SmashHero pointer
 	*/
+}
+
+template <class T>
+void Database<T>::displayTeam() {
+	for (int i = 0; i > 5; i++) {
+		cout << this->hashTable.getItem(this->teamList[i]);
+	}
+}
+
+template <class T>
+void Database<T>::displayHero(double primaryKey) {
+	cout << this->hashTable.getItem(primaryKey);
 }
 
 #endif DATABASE_H
