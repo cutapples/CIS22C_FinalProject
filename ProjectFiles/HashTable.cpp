@@ -34,7 +34,7 @@ int HashTable::getCollisions(){
 	return collisions;
 }
 
-void HashTable::getItem(int key){
+SmashHero* HashTable::getItem(int key){
 	//Hash the key
 	//If the index at hashed key is the key return the data [i.e. if(hTable[index]->data == key)]
 	//else while there is still a next node, check the next node
@@ -46,15 +46,18 @@ void HashTable::getItem(int key){
 	if (entry != nullptr){
 		while (entry != nullptr){ // parses through the hash table
 			if (entry->key == key){
-				std::cout << "Element found at key: " << key << std::endl;
-				std::cout << "Data: " << entry->data << std::endl;
+				//std::cout << "Element found at key: " << key << std::endl;
+				//std::cout << "Data: " << entry->data << std::endl;
 				flag = true;
+				return entry->data;
 			}
 		}
 		if (!flag){ // if the items was not found prompts the user the item was not in the hash table
 			std::cout << "Could not find your " << key << " inside the hash table." << std::endl;
+			return entry->data; //not sure what you're supposed to return if found nothing?
 		}
 	}
+	return entry->data; //not sure what you're supposed to return if found nothing?
 }
 
 void HashTable::addItem(SmashHero* data, int key) {
