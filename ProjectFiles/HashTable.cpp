@@ -27,7 +27,7 @@ HashTable::~HashTable(){
 }
 
 int HashTable::Hash(int key){
-	return (key % tableSize);
+	return ((53*key) % tableSize);
 }
 
 int HashTable::getCollisions(){
