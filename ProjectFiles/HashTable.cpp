@@ -91,6 +91,23 @@ void HashTable::addItem(SmashHero* data, int key) {
 	}
 }
 
+/*
+HashNode* tempPtr = new HashNode(data);
+HashNode* curPtr = hTable[hashy];
+if(curPtr == nullptr) {
+	curPtr = tempPtr;
+}
+else {
+	this->collisions++;
+	while (curPtr->next != nullptr) {
+		curPtr = curPtr->next;
+		this->collisions++;
+	}
+	curPtr->next = tempPtr;
+	tempPtr->prev = curPtr;
+}
+*/
+
 void HashTable::removeItem(int key){
 	// Hash the key
 	// If the hashNode is null do nothing 
