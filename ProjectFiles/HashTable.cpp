@@ -66,6 +66,20 @@ void HashTable::addItem(SmashHero* data, int key) {
 	//	make a new hashnode at the index and point it to data
 	//else while the next HashNode isn't a nullptr, make a tempptr that points to the next Hashnode
 	//create a new hashnode at the end of the linked list and make it point to data, link HashNode*'s
+	HashNode* curPtr = hTable[hashy];
+	if(curPtr == nullptr) {
+		curPtr = new HashNode(data, nullptr, nullptr);
+	}	
+	else {
+		collisions++;
+		while (curPtr->next != nullptr) {
+			curPtr = curPtr->next;
+			collisions++;
+		}
+		curPtr->next = new HashNode(data, nullptr, curPtr);
+	}
+
+/*
 	int hashy = Hash(key);
 	HashNode *entry = hTable[hashy];
 	if (entry == nullptr){ // Checks if the hash table is empty
@@ -89,21 +103,7 @@ void HashTable::addItem(SmashHero* data, int key) {
 		top[hashy]->next = entry;
 		top[hashy] = entry;
 	}
-}
 
-/*
-HashNode* curPtr = hTable[hashy];
-if(curPtr == nullptr) {
-	curPtr = new HashNode(data, nullptr, nullptr);
-}
-else {
-	this->collisions++;
-	while (curPtr->next != nullptr) {
-		curPtr = curPtr->next;
-		this->collisions++;
-	}
-	curPtr->next = new HashNode(data, nullptr, curPtr);
-}
 */
 
 void HashTable::removeItem(int key){
