@@ -92,10 +92,9 @@ void HashTable::addItem(SmashHero* data, int key) {
 }
 
 /*
-HashNode* tempPtr = new HashNode(data);
 HashNode* curPtr = hTable[hashy];
 if(curPtr == nullptr) {
-	curPtr = tempPtr;
+	curPtr = new HashNode(data, nullptr, nullptr);
 }
 else {
 	this->collisions++;
@@ -103,8 +102,7 @@ else {
 		curPtr = curPtr->next;
 		this->collisions++;
 	}
-	curPtr->next = tempPtr;
-	tempPtr->prev = curPtr;
+	curPtr->next = new HashNode(data, nullptr, curPtr);
 }
 */
 
