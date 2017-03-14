@@ -8,7 +8,7 @@ class HashTable {
 private:
 	const int tableSize = 257;
 	HashNode** hTable, **top;
-	int collisions;
+	int collisions = 0;
 
 public:
 	HashTable();
