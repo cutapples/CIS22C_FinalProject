@@ -77,14 +77,14 @@ void HashTable::addItem(SmashHero* data, int key) {
 	else{
 		while (entry != nullptr){ // If there are items within the hash table
 			entry = entry->next;
-			entry = new HashNode;
-			entry->data = data;
-			entry->key = key;
-			entry->next = nullptr;
-			entry->prev = top[hashy];
-			top[hashy]->next = entry;
-			top[hashy]->next = entry;
 		}
+		entry = new HashNode;
+		entry->data = data;
+		entry->key = key;
+		entry->next = nullptr;
+		entry->prev = top[hashy];
+		top[hashy]->next = entry;
+		top[hashy]->next = entry;
 	}
 }
 
