@@ -87,7 +87,7 @@ void HashTable::addItem(SmashHero* data, int key) {
 		entry->next = nullptr;
 		entry->prev = top[hashy];
 		top[hashy]->next = entry;
-		top[hashy]->next = entry;
+		top[hashy] = entry;
 	}
 }
 
