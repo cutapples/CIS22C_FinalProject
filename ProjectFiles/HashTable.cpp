@@ -42,7 +42,8 @@ SmashHero* HashTable::getItem(int key){
 	int hashy = Hash(key);
 	bool flag = false;
 	HashNode* entry = hTable[hashy];
-
+	HashNode* temp = hTable[hashy];
+	
 	if (entry != nullptr){
 		while (entry != nullptr){ // parses through the hash table
 			if (entry->key == key){
