@@ -81,7 +81,7 @@ void HashTable::addItem(SmashHero* data, int key) {
 		}
 		curPtr->next = new HashNode(data, nullptr, curPtr);
 	}
-
+}
 /*
 	int hashy = Hash(key);
 	HashNode *entry = hTable[hashy];
