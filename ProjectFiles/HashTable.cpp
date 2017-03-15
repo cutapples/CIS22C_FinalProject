@@ -48,6 +48,8 @@ SmashHero* HashTable::getItem(int key){
 			if (entry->key == key){
 				//std::cout << "Element found at key: " << key << std::endl;
 				//std::cout << "Data: " << entry->data << std::endl;
+				temp->next = entry->next; // moves the found item to the front of the list
+				entry = temp;
 				flag = true;
 				return entry->data;
 			}
