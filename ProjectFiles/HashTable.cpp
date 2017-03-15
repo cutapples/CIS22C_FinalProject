@@ -69,6 +69,7 @@ void HashTable::addItem(SmashHero* data, int key) {
 	//	make a new hashnode at the index and point it to data
 	//else while the next HashNode isn't a nullptr, make a tempptr that points to the next Hashnode
 	//create a new hashnode at the end of the linked list and make it point to data, link HashNode*'s
+	int hashy = Hash(key);
 	HashNode* curPtr = hTable[hashy];
 	if(curPtr == nullptr) {
 		curPtr = new HashNode(data, nullptr, nullptr);
