@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <fstream>
+
 #include "BST.h"
 #include "HashTable.h"
 #include "Database.h"
@@ -8,38 +9,21 @@
 
 using namespace std;
 
-/*
-void battleMenu();
-void purchaseMenu();
-void sellMenu();
-void heroListMenu();
-void optionsMenu();
-*/
-
 void displayLoadingScreen();
 void displayMainMenu();
 
+void battleMenu(Database<SmashHero*>& database);
+void purchaseMenu(Database<SmashHero*>& database);
+void sellMenu(Database<SmashHero*>& database);
+void heroListMenu(Database<SmashHero*>& database);
 void teamMenu(Database<SmashHero*>& database);
-
-/*
-void loadSave(fstream& saveFile, BST& heroTree, HashTable& heroDatabase);
-	Load the save file onto saveFile
-	Count the # of lines, reset file pointer
-	Create HashTable based on the size (maybe a table of # ranges to associated prime numbers)
-	(if we do the party list, load first line into party list)
-	Create new SmashHeroes for each line and insert into BST and Hashtable
-
-void saveToFile(fstream& saveFile, HashTable& heroDatabase);
-	clear saveFile
-	(if we do the party list, load party to first line)
-	HashTable inSequence function call with prints to file instead of couts?
-*/
+void optionsMenu(Database<SmashHero*>& database);
 
 int main() {
 
 	displayLoadingScreen();
 	fstream saveFile("SaveFile.txt");
-	if (saveFile.fail()){
+	if (saveFile.fail()) {
 		cout << "Error: Save file not found.\nCreating empty save file.\n";
 		saveFile.close();
 		saveFile.open("SaveFile.txt", ios::out);
@@ -47,14 +31,17 @@ int main() {
 		saveFile.open("SaveFile.txt");
 		cout << "Empty save file created.\n";
 	}
+	cout << "Initializing database...\n";
 	Database<SmashHero*> database(saveFile);
 	cout << "Database successfully intialized.\n";
-	
+
 	system("pause");
 
 	bool ExitMainMenu = false;
 
 	do {
+		system("cls");
+
 		displayMainMenu();
 
 		int userChoice;
@@ -63,51 +50,22 @@ int main() {
 
 		switch (userChoice) {
 		case 1:
-			/*
-			5 Hero array with current team
-			1 2 3 4 5
-			3 gets 3 xp?
-			2 & 4 get 2 xp
-			1 & 5 get 1 xp
-			Return gold value?
-			Different missions?
-			*/
-			
+			battleMenu(database);
 			break;
 		case 2:
-			/*
-			Subtract from gold value
-			Create new SmashHero using a special fstream file constructor (Full Hero List)
-				Rarity roll from 1-100, Randomly select a hero with that rarity from file
-					i.e. if 99, rarityIndex = 4, RNG from 1-6 select from main file with that line #
-			Display the new Hero
-			Insert new SmashHero into BST and HashTable
-			*/
+			purchaseMenu(database);
 			break;
 		case 3:
-			/*
-			Prompt user for a primary key to be deleted
-			Display to be deleted hero (HashTable search function)
-			HashTable delete function call passing the primary key
-			*/
+			sellMenu(database);
 			break;
 		case 4:
-			/*
-			HashTable inSequence function call
-			*/
+			heroListMenu(database);
 			break;
-		case 5:
-			/*
-			Team List Menu
-			5 hero array display function call
-			Prompt user for which slot they want to replace
-			Prompt user for a primary key they own to be put into that slot
-			Replace heroArray[slot] with database->heroList[primaryKey]
-			*/
+		case 5:	
 			teamMenu(database);
 			break;
 		case 6:
-			//optionsMenu();
+			optionsMenu(database);
 			break;
 		case 7:
 			ExitMainMenu = true;
@@ -118,7 +76,7 @@ int main() {
 
 		system("pause");
 		system("cls");
-		
+
 	} while (!ExitMainMenu);
 
 
@@ -138,77 +96,80 @@ void displayMainMenu() {
 	cout << "2. Purchase New Hero" << endl;
 	cout << "3. Sell Hero" << endl;
 	cout << "4. Hero List" << endl;
-	cout << "5. Party Menu" << endl;
+	cout << "5. Team Menu" << endl;
 	cout << "6. Options Menu" << endl;
 	cout << "7. Exit Game" << endl << endl;
 }
 
+/*
+Battle Menu
+
+Display the team on a special battle screen
+use Database::teamBattle() to get the rewards
+Display gold added and increased stats?
+*/
+void battleMenu(Database<SmashHero*>& database) {
+
+}
+
+/*
+Purchase New Hero Menu
+
+Show current gold and how much is to be subtracted
+use Database::purchaseNewHero(int goldCost) to create and insert the new hero which returns back a pointer to be used
+Display the new hero
+*/
+void purchaseMenu(Database<SmashHero*>& database) {
+
+}
+
+/*
+Sell Menu
+Prompt user for a primary key to be deleted
+use Database::displayHero(int primaryKey)
+Confirm delete
+use Database::sellHero(int primaryKey)
+*/
+void sellMenu(Database<SmashHero*>& database) {
+
+}
+
+/*
+Hero List Menu
+HashTable inSequence function call
+*/
+void heroListMenu(Database<SmashHero*>& database) {
+
+}
+
+/*
+Team List Menu
+
+Display Team function call
+Prompt user for which slot they want to replace
+Prompt user for a primary key they own to be put into that slot
+Swap Team Member function call
+*/
 void teamMenu(Database<SmashHero*>& database) {
 	database.displayTeam();
 	cout << "\nWhich slot would you like to swap?(6 for exit)";
 	int slotChoice;
 	cin >> slotChoice;
-	if (slotChoice == 6) {
+	if (slotChoice >= 6 || slotChoice <= 0) {
 		return;
 	}
 	cout << "\nWhat hero would you like to put in slot " << slotChoice << "?(Enter hero key) ";
-	double swapKey;
+	int swapKey;
 	cin >> swapKey;
 	cout << "\n\nYou swapped in this hero into slot " << slotChoice << "!\n";
 	database.displayHero(swapKey);
+	database.swapTeamMember(slotChoice, swapKey);
 }
 
-//void optionsMenu() {
-//cout << "=================Options Menu====================" << endl;
-//cout << "1. Add custom data" << endl;
-//cout << "2. Search data by primary key" << endl;
-//cout << "3. List data in hash table sequence" << endl;
-//cout << "4. List data by key" << endl;
-//cout << "5. Print indented tree" << endl;
-//cout << "6. Display efficiency stats" << endl;
-//cout << "7. Exit" << endl << endl;
-//
-//int optionsMenuChoice;
-//cin >> optionsMenuChoice;
-//
-//switch (optionsMenuChoice) {
-//case 1:
-///*
-//Declare temp attributes as strings
-//Prompt user to input each attribute
-//Concatenate attributes into 1 line
-//Create new SmashHero constructed with the line
-//Insert the new SmashHero into the BST and HashTable
-//*/
-//break;
-//	case 2:
-//		/*
-//		Prompt user for a primary key as double
-//		HashTable search function using primary key
-//		*/
-//		break;
-//	case 3:
-//		/*
-//		HashTable inSequence function call
-//		*/
-//		break;
-//	case 4:
-//		/*
-//		BST inOrderTraversal function call
-//		*/
-//		break;
-//	case 5:
-//		/*
-//		BST printIndentedTree function call
-//		*/
-//		break;
-//	case 6:
-//		/*
-//		HashTable printEfficiency function call
-//		*/
-//		break;
-//	case 7:
-//		break;
-//	}
-//
-//}
+/*
+Options Menu
+Extra menu options for project requirements
+*/
+void optionsMenu(Database<SmashHero*>& database) {
+
+}

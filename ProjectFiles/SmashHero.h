@@ -55,17 +55,17 @@ public:
 	}
 
 	friend bool operator>(SmashHero hero, int userKey) {
-		return (hero.getPrimaryKey() > userKey);	
+		return (hero.getPrimaryKey() > userKey);
 	}
-	
+
 	friend bool operator<(SmashHero hero, int userKey) {
-		return(hero.getPrimaryKey() < userKey);	
+		return(hero.getPrimaryKey() < userKey);
 	}
-	
+
 	friend bool operator==(SmashHero hero, int userKey) {
-		return(hero.getPrimaryKey() == userKey);	
+		return(hero.getPrimaryKey() == userKey);
 	}
-	
+
 };
 
 #endif SMASHHERO_H

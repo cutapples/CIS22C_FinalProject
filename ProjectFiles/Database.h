@@ -16,27 +16,29 @@ template <class T>
 class Database {
 private:
 	fstream saveFile; //The file used to load and save data from
+	fstream heroList; //List of potential heroes you can get
 	HashTable hashTable; //Hashtable of currently owned Heroes
 	BST<T> binarySearchTree; //Sorted tree of currently owned Heroes
-	double teamList[5]; //primaryKeys of last used Team
+	int teamList[5]; //primaryKeys of last used Team
 	int gold; //Gold value gained through doing battles
 
 public:
 	Database(fstream& saveFile);
 
-	void purchaseNewHero();
-	void sellHero(double primaryKey);
+	SmashHero* purchaseNewHero(int goldCost);
+	void teamBattle();
+	void sellHero(int primaryKey);
 	void displayHeroList();
 	void displayOrderedList();
-	void swapTeamMember(int slot, double primaryKey);
+	void swapTeamMember(int slot, int primaryKey);
 	void addCustomHero(string attributeLine);
-	void searchByKey(double primaryKey);
+	void searchByKey(int primaryKey);
 	void printIndentedTree();
 	void displayEfficiency();
 	void saveToFile();
 	void insertNewHero(T data);
 	void displayTeam();
-	void displayHero(double primaryKey);
+	void displayHero(int primaryKey);
 
 	~Database();
 };
@@ -59,9 +61,15 @@ Database<T>::Database(fstream& saveFile) {
 
 }
 
+//Increments the stats? of the heroes in the team and gives some gold value
+template <class T>
+void Database<T>::teamBattle() {
+
+}
+
 //Purchases a new hero by RNG
 template <class T>
-void Database<T>::purchaseNewHero() {
+SmashHero* Database<T>::purchaseNewHero(int goldCost) {
 	/*
 	Subtract gold value
 	Create a random number between 1-100 for rarity %'s
@@ -71,11 +79,11 @@ void Database<T>::purchaseNewHero() {
 	Call insertNewHero function
 	*/
 	//Removing gold cost
-	this->gold -= 100;
+	this->gold -= goldCost;
 
 	//Generating a random number to pull from the hero list
 	srand(time(NULL));
-	double rngesus = rand() % 100 + 1;
+	int rngesus = rand() % 100 + 1;
 	if (rngesus > 98) {
 		rngesus = rand() % 6;
 	}
@@ -91,18 +99,22 @@ void Database<T>::purchaseNewHero() {
 
 	//Finding the hero in the hero list and creating it
 	string line;
-	this->saveFile.seekg(saveFile.beg);
+	this->heroList.seekg(this->heroList.beg);
 	for (int i = 0; i > rngesus; i++) {
-		getline(saveFile, line);
+		getline(this->heroList, line);
 	}
+	this->heroList.seekg(this->heroList.beg);
 	SmashHero* tempPtr = new SmashHero(line);
 
 	//Insert new hero into the Hash Table and BST
+
+	//Returning the tempPtr to be used in main
+	return tempPtr;
 }
 
 //Removes a hero from the database by primaryKey
 template <class T>
-void Database<T>::sellHero(double primaryKey) {
+void Database<T>::sellHero(int primaryKey) {
 	/*
 	Make temp pointer to SmashHero searched through Hash Table using primary key
 	Call hashTable delete function
@@ -110,16 +122,12 @@ void Database<T>::sellHero(double primaryKey) {
 	(If theres gold values associated with heroes, increase gold)
 	Delete temp
 	*/
-	char sellConfirmation;
 	SmashHero* tempPtr = hashTable.getItem(primaryKey);
 	if (tempPtr != nullptr) {
-		cout << *tempPtr;
-		cout << "Would you like to delete this hero?(Y/N) ";
-		cin >> sellConfirmation;
-		if (sellConfirmation == 'Y' || sellConfirmation == 'y') {
-			//Call hashTable delete function
-			//hashTable.deleteItem(tempPtr);
-		}
+		//Add Gold?
+		//Call hashTable and BST delete functions
+		//hashTable.deleteItem(tempPtr);
+		delete tempPtr;
 	}
 }
 
@@ -141,24 +149,20 @@ void Database<T>::displayOrderedList() {
 
 //Switches the team list slot to the new primaryKey
 template <class T>
-void Database<T>::swapTeamMember(int slot, double primaryKey) {
-	/*
-	teamList[slot] = primaryKey;
-	*/
+void Database<T>::swapTeamMember(int slot, int primaryKey) {
+	this->teamList[slot - 1] = primaryKey;
 }
 
 //Makes a new hero using the given attribute line, adding it to the hash table and BST
 template <class T>
-void Database<T>::addCustomHero(string attributeLine){
-	/*
-	Make a temporary SmashHero pointer and create a new SmashHero constructed with the given attribute line
-	Call the Database insertNewHero function passing in the SmashHero pointer
-	*/
+void Database<T>::addCustomHero(string attributeLine) {
+	SmashHero* tempPtr = new SmashHero(attributeLine);
+	//Call the HashTable and BST insert functions
 }
 
 //Searches the Hash Table for the primary key and displays the hero if found
 template <class T>
-void Database<T>::searchByKey(double primaryKey) {
+void Database<T>::searchByKey(int primaryKey) {
 	/*
 	Call Hash Table search function and display the hero with that key
 	*/
@@ -185,7 +189,7 @@ template <class T>
 void Database<T>::saveToFile() {
 	/*
 	Clear old save file
-	Save the current team and current gold onto the first line
+	Save the current team and current gold onto the first 2 lines
 	Read the Hash Table in sequence onto the file
 	*/
 }
@@ -197,16 +201,24 @@ void Database<T>::insertNewHero(T data) {
 	*/
 }
 
+//Displays the current team (Still needs some special graphic or something)
 template <class T>
 void Database<T>::displayTeam() {
 	for (int i = 0; i > 5; i++) {
-		cout << this->hashTable.getItem(this->teamList[i]);
+		SmashHero* tempPtr = this->hashTable.getItem(this->teamList[i]);
+		if (tempPtr != nullptr) {
+			cout << *tempPtr;
+		}
 	}
 }
 
+//Displays a hero with the given
 template <class T>
-void Database<T>::displayHero(double primaryKey) {
-	cout << this->hashTable.getItem(primaryKey);
+void Database<T>::displayHero(int primaryKey) {
+	SmashHero* tempPtr = this->hashTable.getItem(primaryKey);
+	if (tempPtr != nullptr) {
+		cout << *tempPtr;
+	}
 }
 
 #endif DATABASE_H

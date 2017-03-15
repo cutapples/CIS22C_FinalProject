@@ -3,25 +3,24 @@
 
 #include "SmashHero.h"
 
-using namespace std;
-
 class HashNode {
 public:
 	SmashHero* data;
 	HashNode* next;
 	HashNode* prev;
+	int key;
 
 	HashNode();
 	HashNode(SmashHero* data, HashNode* next, HashNode* prev);
 };
 
-HashNode::HashNode(){
+HashNode::HashNode() {
 	this->data = nullptr;
 	this->next = nullptr;
 	this->prev = nullptr;
 }
 
-HashNode::HashNode(SmashHero* data, HashNode* next, HashNode* prev){
+HashNode::HashNode(SmashHero* data, HashNode* next, HashNode* prev) {
 	this->data = data;
 	this->next = next;
 	this->prev = prev;
