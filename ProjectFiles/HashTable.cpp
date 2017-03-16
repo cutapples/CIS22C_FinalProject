@@ -113,6 +113,9 @@ void HashTable::removeItem(int key) {
 			if (entry->prev != nullptr){
 				entry->prev->next = entry->next;
 			}
+			else {
+				hTable[hashy] = entry->next;	
+			}
 			if (entry->next != nullptr) {
 				entry->next->prev = entry->prev;
 			}
