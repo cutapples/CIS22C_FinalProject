@@ -1,1 +1,25 @@
 
+void HashTable::removeItem(int key) {
+	// Hash the key
+	// If the hashNode is null do nothing 
+	// else parses through the hash table until the item is found
+	// remove the item then resets the pointer point to the correct spot
+	int hashy = Hash(key);
+	HashNode*entry = hTable[hashy];
+	HashNode* temp = hTable[hashy];
+
+	while (entry != nullptr){
+		if (*entry->data == key) {
+			//Relinking middle nodes
+			if (entry->prev != nullptr){
+				entry->prev->next = entry->next;
+			}
+			if (entry->next != nullptr) {
+				entry->next->prev = entry->prev;
+			}
+			delete entry;
+			return;
+		}
+		entry = entry->next;
+	}
+}
