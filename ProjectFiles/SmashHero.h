@@ -40,10 +40,6 @@ public:
 	friend ostream& operator<<(ostream& os, SmashHero& hero) {
 
 		//Case being used if the Heroes are being output to the screen.
-		if (&os == &cout) {
-
-
-		}
 
 		// Case being used if the heroes are going to be saved into a file
 		os << hero.primaryKey << "\t";
@@ -64,6 +60,10 @@ public:
 
 	friend bool operator==(SmashHero hero, int userKey) {
 		return(hero.getPrimaryKey() == userKey);
+	}
+
+	friend bool operator!=(SmashHero hero, int userKey) {
+		return (hero.getPrimaryKey() != userKey);
 	}
 
 };
