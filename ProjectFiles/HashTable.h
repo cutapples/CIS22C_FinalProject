@@ -19,6 +19,7 @@ public:
 	void addItem(SmashHero* data, int key);
 	void removeItem(int key);
 	
+	friend ostream& operator<<(ostream& os, HashTable& hashTable);
 };
 
 
