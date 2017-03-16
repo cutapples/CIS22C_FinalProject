@@ -108,8 +108,26 @@ Display the team on a special battle screen
 use Database::teamBattle() to get the rewards
 Display gold added and increased stats?
 */
-void battleMenu(Database<SmashHero*>& database) {
+void battleMenu(Database<SmashHero*>& database) 
+{
+						//Mental Map
+	//Format: /t getPartyMember1 << "HP: " << getCurrentHealth << "/" << getMaxHealth << endl;
+	//We autobattle for each turn. We pause the system for 2-3 secs(?) so as to not have the system display each turn instantaneously.
+	//When we get each party member, we assign each a number 1-5 based on number of members in party. Enemy team will get 6-10.
+	//Each turn we randomize int variable called OurTurnOrder(?) from 1-5 and then another variable called TheirTurnOrder from 6-10.
 
+	//Dodge mechanic: int variable called dodgeChance will randomize 0-25 chance to miss and 26-100 to hit when the function is called in Database. Return 0 for miss and 1 for hit.
+	//if statements for return value of 0 for miss and 1 for hit. If miss, do not call the attack function. If hit, call the attack function. 
+	
+	//Pass the TheirTurnOrder's getCurrentHealth to Attack function so the function knows the Attack function will randomize int variable 
+	//AttackPower from 1 to getCurrentHealth. If balance issue occur, then 1 to getCurrentHealth - 2. Return int attack power.
+	//either handle arithmetic operation getCurrentHealth - attackpower in main or create function in Database to handle it.
+	//if statements to handle if result is negative or not. If < 0, either delete member from cout statements and stop calling its functions(?).
+
+	/t	Party Member 1 HP: 10/10	/t Enemy Member 1 HP: 10/10
+	/t	Party Member 2 HP: 12/12	/t Enemy Member 2 HP: 12/12
+	/t	Party Member 3 HP: 15/15	/t Enemy Member 3 HP: 15/15
+	Turn 1:
 }
 
 /*
