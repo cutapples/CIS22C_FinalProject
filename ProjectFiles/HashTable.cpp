@@ -10,31 +10,29 @@
 #include "HashTable.h"
 #include <iostream>
 
-HashTable::HashTable(){
+HashTable::HashTable() {
 	//Initialize a new table of HashNode*'s and them all nullptrs
 	hTable = new HashNode*[tableSize];
-	top = new HashNode*[tableSize]; // Created for to store the prev items in the prev ptr
-	for (int i = 0; i < tableSize; i++)
-	{
+	for (int i = 0; i < tableSize; i++) {
 		hTable[i] = nullptr;
-		//top[i] = nullptr;
 	}
+	collisions = 0;
 }
 
-HashTable::~HashTable(){
+HashTable::~HashTable() {
 	// destructor for the Hashtable
 	delete[] hTable;
 }
 
-int HashTable::Hash(int key){
-	return ((53*key) % tableSize);
+int HashTable::Hash(int key) {
+	return ((53 * key) % tableSize);
 }
 
-int HashTable::getCollisions(){
+int HashTable::getCollisions() {
 	return collisions;
 }
 
-SmashHero* HashTable::getItem(int key){
+SmashHero* HashTable::getItem(int key) {
 	//Hash the key
 	//If the index at hashed key is the key return the data [i.e. if(hTable[index]->data == key)]
 	//else while there is still a next node, check the next node
@@ -43,38 +41,53 @@ SmashHero* HashTable::getItem(int key){
 	bool flag = false;
 	HashNode* entry = hTable[hashy];
 	HashNode* temp = hTable[hashy];
-	
-	if (entry != nullptr){
-		while (entry != nullptr){ // parses through the hash table
-			if (entry->key == key){
-				//std::cout << "Element found at key: " << key << std::endl;
-				//std::cout << "Data: " << entry->data << std::endl;
-				temp->next = entry;
-               			entry->prev->next = temp->next;
-                		temp = entry;
-				flag = true;
-				return entry->data;
+	if (entry != nullptr) {
+		while (entry != nullptr) { // parses through the hash table
+			if (*entry->data == key) {
+				if (*entry->data == temp->data->getPrimaryKey()){
+					flag = true;
+					return entry->data;
+				}
+				else {
+					//Relinking middle nodes
+					entry->prev->next = entry->next;
+					if(entry->next != nullptr) {
+						entry->next->prev = entry->prev;
+					}
+
+					//Moving entry to front of list
+					entry->prev = nullptr;
+					entry->next = temp;
+					temp->prev = entry;
+					hTable[hashy] = entry;
+
+					flag = true;
+					return entry->data;
+				}
 			}
+			entry = entry->next;
 		}
-		if (!flag){ // if the items was not found prompts the user the item was not in the hash table
+		if (!flag) { // if the items was not found prompts the user the item was not in the hash table
 			std::cout << "Could not find your " << key << " inside the hash table." << std::endl;
+			entry->data = nullptr;
 			return entry->data; //not sure what you're supposed to return if found nothing?
 		}
 	}
-	return entry->data; //not sure what you're supposed to return if found nothing?
+	return (entry->data = nullptr); //not sure what you're supposed to return if found nothing?
 }
 
-void HashTable::addItem(SmashHero* data, int key) {
+void HashTable::addItem(SmashHero* data) {
 	//Hash the key
 	//If the hashnode is a nullptr
 	//	make a new hashnode at the index and point it to data
 	//else while the next HashNode isn't a nullptr, make a tempptr that points to the next Hashnode
 	//create a new hashnode at the end of the linked list and make it point to data, link HashNode*'s
-	int hashy = Hash(key);
+	int hashy = Hash(data->getPrimaryKey());
 	HashNode* curPtr = hTable[hashy];
-	if(curPtr == nullptr) {
+	if (curPtr == nullptr) {
 		curPtr = new HashNode(data, nullptr, nullptr);
-	}	
+		hTable[hashy] = curPtr;
+	}
 	else {
 		collisions++;
 		while (curPtr->next != nullptr) {
@@ -84,34 +97,35 @@ void HashTable::addItem(SmashHero* data, int key) {
 		curPtr->next = new HashNode(data, nullptr, curPtr);
 	}
 }
+
 /*
-	int hashy = Hash(key);
-	HashNode *entry = hTable[hashy];
-	if (entry == nullptr){ // Checks if the hash table is empty
-		entry = new HashNode;
-		entry->data = data;
-		entry->key = key;
-		entry->next = nullptr;
-		entry->prev = nullptr;
-		hTable[hashy] = entry;
-		top[hashy] = entry;
-	}
-	else{
-		while (entry != nullptr){ // If there are items within the hash table
-			entry = entry->next;
-		}
-		entry = new HashNode;
-		entry->data = data;
-		entry->key = key;
-		entry->next = nullptr;
-		entry->prev = top[hashy];
-		top[hashy]->next = entry;
-		top[hashy] = entry;
-	}
+int hashy = Hash(key);
+HashNode *entry = hTable[hashy];
+if (entry == nullptr){ // Checks if the hash table is empty
+entry = new HashNode;
+entry->data = data;
+entry->key = key;
+entry->next = nullptr;
+entry->prev = nullptr;
+hTable[hashy] = entry;
+top[hashy] = entry;
+}
+else{
+while (entry != nullptr){ // If there are items within the hash table
+entry = entry->next;
+}
+entry = new HashNode;
+entry->data = data;
+entry->key = key;
+entry->next = nullptr;
+entry->prev = top[hashy];
+top[hashy]->next = entry;
+top[hashy] = entry;
+}
 
 */
 
-void HashTable::removeItem(int key){
+void HashTable::removeItem(int key) {
 	// Hash the key
 	// If the hashNode is null do nothing 
 	// else parses through the hash table until the item is found
@@ -119,19 +133,19 @@ void HashTable::removeItem(int key){
 	int hashy = Hash(key);
 	HashNode*entry = hTable[hashy];
 
-	if (entry->key != key || entry == nullptr){
+	if (entry->key != key || entry == nullptr) {
 		std::cout << "No element found." << std::endl;
 		return;
 	}
-	while (entry != nullptr){
-		if (entry->next == nullptr){
-			if (entry->prev == nullptr){
+	while (entry != nullptr) {
+		if (entry->next == nullptr) {
+			if (entry->prev == nullptr) {
 				hTable[hashy] = nullptr;
 				top[hashy] = nullptr;
 				delete entry;
 				break;
 			}
-			else{
+			else {
 				top[hashy] = entry->prev;
 				top[hashy]->next = nullptr;
 				delete entry;
