@@ -17,7 +17,7 @@ HashTable::HashTable(){
 	for (int i = 0; i < tableSize; i++)
 	{
 		hTable[i] = nullptr;
-		top[i] = nullptr;
+		//top[i] = nullptr;
 	}
 }
 
@@ -49,8 +49,9 @@ SmashHero* HashTable::getItem(int key){
 			if (entry->key == key){
 				//std::cout << "Element found at key: " << key << std::endl;
 				//std::cout << "Data: " << entry->data << std::endl;
-				temp->next = entry->next; // moves the found item to the front of the list
-				entry = temp;
+				temp->next = entry;
+               			entry->prev->next = temp->next;
+                		temp = entry;
 				flag = true;
 				return entry->data;
 			}
