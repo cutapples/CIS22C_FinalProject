@@ -132,27 +132,20 @@ void HashTable::removeItem(int key) {
 	// remove the item then resets the pointer point to the correct spot
 	int hashy = Hash(key);
 	HashNode*entry = hTable[hashy];
+	HashNode* temp = hTable[hashy];
 
-	if (entry->key != key || entry == nullptr) {
-		std::cout << "No element found." << std::endl;
-		return;
-	}
-	while (entry != nullptr) {
-		if (entry->next == nullptr) {
-			if (entry->prev == nullptr) {
-				hTable[hashy] = nullptr;
-				top[hashy] = nullptr;
-				delete entry;
-				break;
+	while (entry != nullptr){
+		if (*entry->data == key) {
+			//Relinking middle nodes
+			if (entry->prev != nullptr){
+				entry->prev->next = entry->next;
 			}
-			else {
-				top[hashy] = entry->prev;
-				top[hashy]->next = nullptr;
-				delete entry;
-				entry = top[hashy];
+			if (entry->next != nullptr) {
+				entry->next->prev = entry->prev;
 			}
+			delete entry;
+			return;
 		}
 		entry = entry->next;
 	}
-
 }
