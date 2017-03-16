@@ -98,33 +98,6 @@ void HashTable::addItem(SmashHero* data) {
 	}
 }
 
-/*
-int hashy = Hash(key);
-HashNode *entry = hTable[hashy];
-if (entry == nullptr){ // Checks if the hash table is empty
-entry = new HashNode;
-entry->data = data;
-entry->key = key;
-entry->next = nullptr;
-entry->prev = nullptr;
-hTable[hashy] = entry;
-top[hashy] = entry;
-}
-else{
-while (entry != nullptr){ // If there are items within the hash table
-entry = entry->next;
-}
-entry = new HashNode;
-entry->data = data;
-entry->key = key;
-entry->next = nullptr;
-entry->prev = top[hashy];
-top[hashy]->next = entry;
-top[hashy] = entry;
-}
-
-*/
-
 void HashTable::removeItem(int key) {
 	// Hash the key
 	// If the hashNode is null do nothing 
