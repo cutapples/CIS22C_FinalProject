@@ -40,22 +40,40 @@ SmashHero* HashTable::getItem(int key) {
 	int hashy = Hash(key);
 	bool flag = false;
 	HashNode* entry = hTable[hashy];
-
+	HashNode* temp = hTable[hashy];
 	if (entry != nullptr) {
 		while (entry != nullptr) { // parses through the hash table
-			if (entry->key == key) {
-				//std::cout << "Element found at key: " << key << std::endl;
-				//std::cout << "Data: " << entry->data << std::endl;
-				flag = true;
-				return entry->data;
+			if (*entry->data == key) {
+				if (*entry->data == temp->data->getPrimaryKey()){
+					flag = true;
+					return entry->data;
+				}
+				else {
+					//Relinking middle nodes
+					entry->prev->next = entry->next;
+					if(entry->next != nullptr) {
+						entry->next->prev = entry->prev;
+					}
+
+					//Moving entry to front of list
+					entry->prev = nullptr;
+					entry->next = temp;
+					temp->prev = entry;
+					hTable[hashy] = entry;
+
+					flag = true;
+					return entry->data;
+				}
 			}
+			entry = entry->next;
 		}
 		if (!flag) { // if the items was not found prompts the user the item was not in the hash table
 			std::cout << "Could not find your " << key << " inside the hash table." << std::endl;
+			entry->data = nullptr;
 			return entry->data; //not sure what you're supposed to return if found nothing?
 		}
 	}
-	return entry->data; //not sure what you're supposed to return if found nothing?
+	return (entry->data = nullptr); //not sure what you're supposed to return if found nothing?
 }
 
 void HashTable::addItem(SmashHero* data) {
@@ -64,10 +82,11 @@ void HashTable::addItem(SmashHero* data) {
 	//	make a new hashnode at the index and point it to data
 	//else while the next HashNode isn't a nullptr, make a tempptr that points to the next Hashnode
 	//create a new hashnode at the end of the linked list and make it point to data, link HashNode*'s
-	int hashy = Hash(data->setPrimaryKey);
+	int hashy = Hash(data->getPrimaryKey());
 	HashNode* curPtr = hTable[hashy];
 	if (curPtr == nullptr) {
 		curPtr = new HashNode(data, nullptr, nullptr);
+		hTable[hashy] = curPtr;
 	}
 	else {
 		collisions++;
