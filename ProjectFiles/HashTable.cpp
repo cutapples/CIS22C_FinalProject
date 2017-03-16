@@ -122,3 +122,6 @@ void HashTable::removeItem(int key) {
 		entry = entry->next;
 	}
 }
+
+//displayInsequence()
+// displayEfficiency()
