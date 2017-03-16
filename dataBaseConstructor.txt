@@ -1,0 +1,42 @@
+Database<T>::Database(fstream& saveFile) {
+	string gold;
+	string tempTeam;
+	string line;
+
+	
+
+	getline(saveFile, gold);
+
+	this->gold = stoi(gold);
+
+	getline(saveFile, tempTeam);
+
+	int space1 = tempTeam.find("\t");
+	int space2 = tempTeam.find("\t ", space1);
+	int space3 = tempTeam.find("\t ", space2);
+	int space4 = tempTeam.find("\t ", space3);
+
+
+	teamList[0] = stod(tempTeam.substr(0, space1));
+	teamList[1] = stod(tempTeam.substr(space1, space2));
+	teamList[2] = stod(tempTeam.substr(space2, space3));
+	teamList[3] = stod(tempTeam.substr(space3, space4));
+	teamList[4] = stod(tempTeam.substr(space4, 1));
+
+	while (!saveFile.eof()){
+		SmashHero* ptr;
+		getline(saveFile, line);
+		ptr = new SmashHero(line);
+		insertNewHero(ptr);
+		
+	}
+	
+	/*
+	Load gold and team list (still thinking of how this can be done
+	Load rest of file into the hashTable and binarySearchTree
+	Loop while not at the end of file
+	Get line until new line, store into temp string
+	Make temp SmashHero pointer and create a new SmashHero using the constructor that takes an attribute string
+	insert temp SmashHero pointer using Database::insertNewHero
+	*/
+}
