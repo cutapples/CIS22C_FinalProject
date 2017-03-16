@@ -123,5 +123,19 @@ void HashTable::removeItem(int key) {
 	}
 }
 
+ostream& operator<<(ostream& os, HashTable& hashTable) {
+	for (int i = 0; i < hashTable.tableSize; i++){
+		if (hashTable.hTable[i] != nullptr){
+			HashNode* tempPtr = hashTable.hTable[i];
+			os << *tempPtr->data << endl;
+			while (tempPtr->next != nullptr) {
+				tempPtr = tempPtr->next;
+				os << *tempPtr->data << endl;
+			}
+		}
+	}
+	return os;
+}
+
 //displayInsequence()
 // displayEfficiency()
