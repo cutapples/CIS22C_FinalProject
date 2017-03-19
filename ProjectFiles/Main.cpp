@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <fstream>
+#include <stdlib.h>
 
 #include "BST.h"
 #include "HashTable.h"
@@ -12,7 +13,7 @@ using namespace std;
 void displayLoadingScreen();
 void displayMainMenu();
 
-void battleMenu(Database<SmashHero*>& database);
+void battleMenu(Database<SmashHero*>& database, bool battleHelp);
 void purchaseMenu(Database<SmashHero*>& database);
 void sellMenu(Database<SmashHero*>& database);
 void heroListMenu(Database<SmashHero*>& database);
@@ -39,6 +40,10 @@ int main() {
 
 	bool ExitMainMenu = false;
 
+	srand(time(NULL)); //creates a randomized seed for use in the Battle feature.
+
+	bool battleHelp = true;
+
 	do {
 		system("cls");
 
@@ -50,7 +55,7 @@ int main() {
 
 		switch (userChoice) {
 		case 1:
-			battleMenu(database);
+			battleMenu(database, battleHelp);
 			break;
 		case 2:
 			purchaseMenu(database);
@@ -101,33 +106,74 @@ void displayMainMenu() {
 	cout << "7. Exit Game" << endl << endl;
 }
 
-/*
-Battle Menu
-
-Display the team on a special battle screen
-use Database::teamBattle() to get the rewards
-Display gold added and increased stats?
-*/
-void battleMenu(Database<SmashHero*>& database) 
+void battleMenu(Database<SmashHero*>& database, bool battleHelp)
 {
-						//Mental Map
-	//Format: /t getPartyMember1 << "HP: " << getCurrentHealth << "/" << getMaxHealth << endl;
-	//We autobattle for each turn. We pause the system for 2-3 secs(?) so as to not have the system display each turn instantaneously.
-	//When we get each party member, we assign each a number 1-5 based on number of members in party. Enemy team will get 6-10.
-	//Each turn we randomize int variable called OurTurnOrder(?) from 1-5 and then another variable called TheirTurnOrder from 6-10.
-
-	//Dodge mechanic: int variable called dodgeChance will randomize 0-25 chance to miss and 26-100 to hit when the function is called in Database. Return 0 for miss and 1 for hit.
-	//if statements for return value of 0 for miss and 1 for hit. If miss, do not call the attack function. If hit, call the attack function. 
-	
-	//Pass the TheirTurnOrder's getCurrentHealth to Attack function so the function knows the Attack function will randomize int variable 
-	//AttackPower from 1 to getCurrentHealth. If balance issue occur, then 1 to getCurrentHealth - 2. Return int attack power.
-	//either handle arithmetic operation getCurrentHealth - attackpower in main or create function in Database to handle it.
-	//if statements to handle if result is negative or not. If < 0, either delete member from cout statements and stop calling its functions(?).
-
-	/t	Party Member 1 HP: 10/10	/t Enemy Member 1 HP: 10/10
-	/t	Party Member 2 HP: 12/12	/t Enemy Member 2 HP: 12/12
-	/t	Party Member 3 HP: 15/15	/t Enemy Member 3 HP: 15/15
-	Turn 1:
+	system("cls");
+	int choice = 0;
+	cout << "====================Battle Menu====================" << endl;
+	if (battleHelp == true)
+	{
+		cout << "\t\tHere is an explanation of the various systems at work here:" << endl;
+		cout << "-Battles go automatically with no need for user input." << endl;
+		cout << "-Both your party and a random enemy party are assigned a turn order for each member so everyone gets a turn." << endl;
+		cout << "-When member A attacks member B, B's DEF stat is subtracted from A's ATK stat to get the final ATK stat." << endl;
+		cout << "-Attacks have a base chance to miss." << endl;
+		cout << "-If member B's DEF stat is higher than A's ATK stat, A's ATK stat will be set to a base minimum that scales with B's level." << endl;
+		cout << "-When HP goes to 0, that member is knocked out. You can pay to heal up your current team back in the Main Menu." << endl;
+		cout << "-You win by knocking out the entire enemy team and lose when your entire team gets knocked out. You earn gold and EXP regardless of win or lost." << endl;
+		cout << "-You have a chance to randomly increase your earnings of gold and EXP." << endl;
+		cout << "-If EXP >= 100, then you level up. You gain base stat increases (ATK+) as well as a random chance for more stat increases (ATK+ and DEF+++)." << endl;
+		system("PAUSE");
+		cout << endl << "\tWhat would you like to do?" << endl;
+		cout << "1. I would like to battle an opponent" << endl;
+		cout << "2. Back out to Main menu" << endl;
+		cout << ">>> ";
+		cin >> choice;
+		if (choice == 1)
+		{
+			battleHelp = false;
+			database.teamBattle();
+		}
+	}
+	else
+	{
+		bool exit = false;
+		do
+		{
+			cout << endl << "\tWhat would you like to do?" << endl;
+			cout << "1. I would like to battle an opponent" << endl;
+			cout << "2. View the Help screen again" << endl;
+			cout << "3. Back out to Main Menu" << endl;
+			cout << ">>> ";
+			cin >> choice;
+			switch (choice)
+			{
+			case 1:
+				database.teamBattle();
+				exit = true;
+				break;
+			case 2:
+				cout << "\t\tHere is an explanation of the various systems at work here:" << endl;
+				cout << "-Battles go automatically with no need for user input." << endl;
+				cout << "-Both your party and a random enemy party are assigned a turn order for each member so everyone gets a turn." << endl;
+				cout << "-When member A attacks member B, B's DEF stat is subtracted from A's ATK stat to get the final ATK stat." << endl;
+				cout << "-Attacks have a base chance to miss." << endl;
+				cout << "-If member B's DEF stat is higher than A's ATK stat, A's ATK stat will be set to a base minimum that scales with B's level." << endl;
+				cout << "-When HP goes to 0, that member is knocked out. You can pay to heal up your current team back in the Main Menu." << endl;
+				cout << "-You win by knocking out the entire enemy team and lose when your entire team gets knocked out. You earn gold and EXP regardless of win or lost." << endl;
+				cout << "-You have a chance to randomly increase your earnings of gold and EXP." << endl;
+				cout << "-If EXP >= 100, then you level up. You gain base stat increases (ATK+) as well as a random chance for more stat increases (ATK+ and DEF+++)." << endl;
+				system("PAUSE");
+				break;
+			case 3:
+				exit = true;
+				break;
+			default:
+				cout << "Invalid input. Try again." << endl;
+				break;
+			}
+		} while (!exit);
+	}
 }
 
 /*
