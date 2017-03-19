@@ -1,6 +1,7 @@
 #ifndef SMASHHERO_H
 #define SMASHHERO_H
 #include <string>
+#include <iostream>
 #include <stdlib.h>
 
 using namespace std;
@@ -83,7 +84,7 @@ public:
 	void LoseHP(int attackpower);
 	//void setHeroMaxHP(int newmaxHP);
 	int getHeroMaxHP() { return this->maxHP; }
-	void setTurnOrder() { srand(time(NULL)); this->TurnOrder = rand() % 10 + 1; }
+	void setTurnOrder() { this->TurnOrder = rand() % 10 + 1; }
 	int getTurnOrder() { return this->TurnOrder; }
 	//void setAttackPower(int newATK);
 	int getAttackPower() { return this->ATK; }
@@ -100,6 +101,7 @@ void SmashHero::GenerateStats()
 	if (rarityIndex == 1)
 	{
 		Level = 1;
+		EXP = 0;
 		maxHP = rand() % 17 - 14;
 		HP = maxHP;
 		ATK = rand() % 7 - 5;
@@ -108,6 +110,7 @@ void SmashHero::GenerateStats()
 	else if (rarityIndex == 2)
 	{
 		Level = 1;
+		EXP = 0;
 		maxHP = rand() % 22 - 18;
 		HP = maxHP;
 		ATK = rand() % 10 - 8;
@@ -116,6 +119,7 @@ void SmashHero::GenerateStats()
 	else if (rarityIndex == 3)
 	{
 		Level = 1;
+		EXP = 0;
 		maxHP = rand() % 27 - 23;
 		HP = maxHP;
 		ATK = rand() % 14 - 11;
@@ -124,6 +128,7 @@ void SmashHero::GenerateStats()
 	else if (rarityIndex == 4)
 	{
 		Level = 1;
+		EXP = 0;
 		maxHP = rand() % 32 - 28;
 		HP = maxHP;
 		ATK = rand() % 18 - 15;
@@ -295,17 +300,5 @@ void SmashHero::setEXP(int amount)
 		}
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 #endif SMASHHERO_H
