@@ -7,7 +7,7 @@
 class HashTable {
 private:
 	const int tableSize = 257;
-	HashNode** hTable, **top;
+	HashNode** hTable;
 	int collisions = 0;
 
 public:
@@ -15,8 +15,8 @@ public:
 	~HashTable();
 	int Hash(int key);
 	int getCollisions();
-	void getItem(int key);
-	void addItem(SmashHero* data, int key);
+	SmashHero* getItem(int key);
+	void addItem(SmashHero* data);
 	void removeItem(int key);
 	
 	friend ostream& operator<<(ostream& os, HashTable& hashTable);
