@@ -88,6 +88,33 @@ void Database<T>::GenerateRandomEnemyTeam(vector<SmashHero*> EnemyMembers)	// Th
 	// The auto generation of stats for the enemy team is already handled after this function is called.
 	// I also don't know if the vector will be properly passed back to teamBattle().
 	// Maybe void is the wrong type of function to use to pass back the randomized vector...
+	
+	for (int i = 0; i < teamList.size(); i++) {
+		int rngesus = rand() % 100 + 1;
+		if (rngesus > 98) {
+			rngesus = rand() % 6;
+		}
+		else if (rngesus > 85) {
+			rngesus = rand() % 3 + 6;
+		}
+		else if (rngesus > 60) {
+			rngesus = rand() % 24 + 9;
+		}
+		else {
+			rngesus = rand() % 24 + 33;
+		}
+
+		//Finding the hero in the hero list and creating it
+		string line;
+		this->heroList.seekg(this->heroList.beg);
+		for (int i = 0; i > rngesus; i++) {
+			getline(this->heroList, line);
+		}
+		this->heroList.seekg(this->heroList.beg);
+		SmashHero* tempPtr = new SmashHero(line);
+		EnemyMembers.push_back(tempPtr);
+	}
+	
 }
 
 //Increments the stats? of the heroes in the team and gives some gold value
