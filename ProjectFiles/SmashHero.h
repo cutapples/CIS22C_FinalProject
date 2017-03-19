@@ -78,6 +78,7 @@ public:
 	int getLevel() { return this->Level; }
 	void AdjustDifficulty(int totalLevels);
 	//void setHeroHP(int newHP);
+	void HeroisHealed();
 	int getHeroHP();
 	void LoseHP(int attackpower);
 	//void setHeroMaxHP(int newmaxHP);
@@ -181,6 +182,11 @@ void SmashHero::AdjustDifficulty(int totalLevels)
 		ATK = rand() % 80 - 60;
 		DEF = rand() % 35 - 28;
 	}
+}
+
+void SmashHero::HeroisHealed()
+{
+	HP = maxHP;		// heals to full.
 }
 
 int SmashHero::getHeroHP()

@@ -44,6 +44,7 @@ public:
 	void displayHero(int primaryKey);
 
 	///////////////////////////////// Battle System
+	void healUs();
 	bool teamBattle();
 	void GenerateRandomStatsTeam();	
 	void GenerateRandomEnemyTeam(vector<SmashHero*> EnemyMembers);
@@ -70,13 +71,25 @@ Database<T>::Database(fstream& saveFile) {
 }
 
 template <class T>
+void Database<T>::healUs() //This function is called in main.Only affects heroes in current party.
+{
+	gold -= 100;		   // unsure about price, put 100 for now.
+	vector<SmashHero*> ourTeam;
+	for (int i = 1; i < teamList.size(); i++)
+	{
+		ourTeam.push_back(hashTable.getItem(teamList[i]));
+		ourTeam[i]->HeroisHealed();
+	}
+}
+
+template <class T>
 void Database<T>::GenerateRandomStatsTeam() //called after heroes are purchased or inserted into teamList vector.
 {
 	vector<SmashHero*> ourTeam;
 	for (int i = 1; i < teamList.size(); i++)
 	{
 		ourTeam.push_back(hashTable.getItem(teamList[i]));
-		ourTeam[i]->GenerateStats();	//generate their stats.
+		ourTeam[i]->GenerateStats();	   //generate their stats.
 	}
 }
 
@@ -130,7 +143,7 @@ bool Database<T>::teamBattle()
 		totalLevels += Members[i]->getLevel();
 	}
 	vector <SmashHero*> EnemyMembers;
-	GenerateRandomEnemyTeam(EnemyMembers);	// fill up the vector of enemyteamList with random heroes 
+	GenerateRandomEnemyTeam(EnemyMembers);				// fill up the vector of enemyteamList with random heroes 
 	for (int i = 1; i < enemyteamList.size(); i++)
 	{
 		EnemyMembers.push_back(hashTable.getItem(enemyteamList[i]));
@@ -158,25 +171,25 @@ bool Database<T>::teamBattle()
 			cout << endl;
 		}
 		///////////////// Initiate combat. Go by turn order and randomize target. Check if attack missed. Always check if HP is already 0 or below 0. If so, end turn for that hero or enemy.
-		for (int i = 1; i < 11; i++)											// first for loop is for Turn order.
+		for (int i = 1; i < 11; i++)										// first for loop is for Turn order.
 		{
-			for (int j = 1; j < teamList.size(); j++)							// second for loop will loop through each hero and enemy to find who has the Turn order i.
+			for (int j = 1; j < teamList.size(); j++)						// second for loop will loop through each hero and enemy to find who has the Turn order i.
 			{
-				if (Members[j]->getTurnOrder() == i)							// if Member j has Turn Order i, then proceed with combat.
+				if (Members[j]->getTurnOrder() == i)						// if Member j has Turn Order i, then proceed with combat.
 				{
-					if (Members[j]->isKnockedOut() == false)							// if Member j is not knocked out, proceed with picking a target.
+					if (Members[j]->isKnockedOut() == false)				// if Member j is not knocked out, proceed with picking a target.
 					{
 						bool isAttackSuccessful = false;
-						do                                                      // exits the do while loop when we have made a successful attack.
+						do                                                  // exits the do while loop when we have made a successful attack.
 						{
-							int attackpower = Members[j]->getAttackPower();		// get its attack power
-							int k = rand() % enemyteamList.size() - 1;			// randomize its target.
-							if (EnemyMembers[k]->isKnockedOut() == false)				// checks if the target is already knocked out. If not, then search for another target.
+							int attackpower = Members[j]->getAttackPower();	// get its attack power
+							int k = rand() % enemyteamList.size() - 1;		// randomize its target.
+							if (EnemyMembers[k]->isKnockedOut() == false)	// checks if the target is already knocked out. If not, then search for another target.
 							{
-								if (Members[j]->didWeHit() == false)						// Hit chance mechanic
+								if (Members[j]->didWeHit() == false)		// Hit chance mechanic
 								{
 									cout << "Your " << Members[j]->getHeroName() << " missed its attack!" << endl;
-									isAttackSuccesful = true;					// Target dodged the attack so end turn for Member j.
+									isAttackSuccesful = true;				// Target dodged the attack so end turn for Member j.
 								}
 								else
 								{
@@ -185,6 +198,7 @@ bool Database<T>::teamBattle()
 									///////////////////////////////////// Graze damage mechanic in case attackpower became 0 or negative after subtracting defensepower from it.
 									if (attackpower <= 0)						
 									{
+										// These values are taken straight from the AdjustDifficulty() from SmashHero.h
 										if (Members[j]->getLevel() <= 15)
 										{
 											attackpower = rand() % 5 - 3;
@@ -210,7 +224,7 @@ bool Database<T>::teamBattle()
 											attackpower = rand() % 35 - 28;
 										}
 									}
-									EnemyMembers[k]->LoseHP(attackpower);		// and then attack that target.
+									EnemyMembers[k]->LoseHP(attackpower);	// and then attack that target.
 									cout << "Your " << Members[j]->getHeroName() << " attacked the enemy's " << EnemyMembers[k]->getHeroName() << " for " << attackpower;
 									////////////////////////////////////// print out the resultant HP of the target or if its knocked out.
 									if (EnemyMembers[k]->isKnockedOut() == false) { cout << " Their " << EnemyMembers[k]->getHeroName() << " is now at HP: " << EnemyMembers[k]->getHeroHP() << "/" << EnemyMembers[k]->getHeroMaxHP() << endl; }
@@ -221,25 +235,25 @@ bool Database<T>::teamBattle()
 						} while (!isAttackSuccessful);
 					}
 				}
-				else if (EnemyMembers[j]->getTurnOrder() == i)					// if EnemyMember j has Turn Order i, then proceed with combat.
+				else if (EnemyMembers[j]->getTurnOrder() == i)				// if EnemyMember j has Turn Order i, then proceed with combat.
 				{
-					if (EnemyMembers[j]->isKnockedOut() == false)						// if EnemyMember j is not knocked out, proceed with picking a target.
+					if (EnemyMembers[j]->isKnockedOut() == false)			// if EnemyMember j is not knocked out, proceed with picking a target.
 					{
 						bool isAttackSuccessful = false;
-						do                                                      // exits the do while loop when the enemy have made a successful attack.
+						do                                                  // exits the do while loop when the enemy have made a successful attack.
 						{
 							int attackpower = EnemyMembers[j]->getAttackPower();// get its attack power
-							int k = rand() % teamList.size() - 1;				// randomize its target.
-							if (!Members[k]->isKnockedOut())					// checks if the target is already knocked out. If not, then search for another target.
+							int k = rand() % teamList.size() - 1;			// randomize its target.
+							if (!Members[k]->isKnockedOut())				// checks if the target is already knocked out. If not, then search for another target.
 							{
-								if (!EnemyMembers[j]->didTheyHit())					// Hit chance mechanic
+								if (!EnemyMembers[j]->didTheyHit())			// Hit chance mechanic
 								{
 									cout << "Your " << EnemyMembers[j]->getHeroName() << " missed its attack!" << endl;
-									isAttackSuccesful = true;					// Target dodged the attack so end turn for EnemyMember j.
+									isAttackSuccesful = true;				// Target dodged the attack so end turn for EnemyMember j.
 								}
 								else
 								{
-									Members[k]->LoseHP(attackpower);			// and then attack that target.
+									Members[k]->LoseHP(attackpower);		// and then attack that target.
 									cout << "The enemy's " << EnemyMembers[j]->getHeroName() << " attacked your " << Members[k]->getHeroName() << " for " << attackpower;
 									////////////////////////////////////// print out the resultant HP of the target or if its knocked out.
 									if (Members[k]->isKnockedOut() == false) { cout << " Our " << Members[k]->getHeroName() << " is now at HP: " << Members[k]->getHeroHP() << "/" << Members[k]->getHeroMaxHP() << endl; }
