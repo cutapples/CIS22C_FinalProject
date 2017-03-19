@@ -24,7 +24,7 @@ private:
 	vector<int> teamList; //vector of primaryKeys of last used Team
 	int gold; //Gold value gained through doing battles
 
-	vector<int> enemyteamList; //vector of primaryKeys of randomly generated Enemy Team.
+	//vector<int> enemyteamList; //vector of primaryKeys of randomly generated Enemy Team.
 
 public:
 	Database(fstream& saveFile);
@@ -96,7 +96,7 @@ Database<T>::Database(fstream& saveFile) {
 }
 
 template <class T>
-void Database<T>::healUs() //This function is called in main.Only affects heroes in current party.
+void Database<T>::healUs() //This function is called in main. Only affects heroes in current party.
 {
 	gold -= 100;		   // unsure about price, put 100 for now.
 	vector<SmashHero*> ourTeam;
@@ -169,9 +169,8 @@ bool Database<T>::teamBattle()
 	}
 	vector <SmashHero*> EnemyMembers;
 	GenerateRandomEnemyTeam(EnemyMembers);				// fill up the vector of enemyteamList with random heroes 
-	for (int i = 1; i < enemyteamList.size(); i++)
+	for (int i = 1; i < EnemyMembers.size(); i++)
 	{
-		EnemyMembers.push_back(hashTable.getItem(enemyteamList[i]));
 		EnemyMembers[i]->AdjustDifficulty(totalLevels);	//auto generate their stats.
 	}
 	int TurnNumber = 1;
@@ -208,7 +207,7 @@ bool Database<T>::teamBattle()
 						do                                                  // exits the do while loop when we have made a successful attack.
 						{
 							int attackpower = Members[j]->getAttackPower();	// get its attack power
-							int k = rand() % enemyteamList.size() - 1;		// randomize its target.
+							int k = rand() % EnemyMembers.size() - 1;		// randomize its target.
 							if (EnemyMembers[k]->isKnockedOut() == false)	// checks if the target is already knocked out. If not, then search for another target.
 							{
 								if (Members[j]->didWeHit() == false)		// Hit chance mechanic
@@ -311,7 +310,7 @@ bool Database<T>::teamBattle()
 			battlecompleted = true;	// exit out the loop since we lost.
 			battleResult = false;	// false for we lost.
 		}
-		else if (enemyknockedout == enemyteamList.size())
+		else if (enemyknockedout == EnemyMembers.size())
 		{
 			cout << endl << "The enemy team has been wiped out! You have won this battle!" << endl;
 			battlecompleted = true;	// exit out the loop since we won.
