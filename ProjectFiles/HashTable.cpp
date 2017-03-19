@@ -21,6 +21,23 @@ HashTable::HashTable() {
 
 HashTable::~HashTable() {
 	// destructor for the Hashtable
+	for (int i = 0; i < tableSize; i++) {
+		if (hTable[i] != nullptr) {
+			HashNode* tempPtr = hTable[i];
+			//Find the last node in the linked list
+			while (tempPtr->next != nullptr) {
+				tempPtr = tempPtr->next;
+			}
+			//Backtrack through the linked list deleting nodes as you go through
+			while (tempPtr->prev != nullptr) {
+				tempPtr = tempPtr->prev;
+				delete tempPtr->next->data;
+				delete tempPtr->next;
+			}
+			delete tempPtr->data;
+			delete tempPtr;
+		}
+	}
 	delete[] hTable;
 }
 
