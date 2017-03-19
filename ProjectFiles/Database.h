@@ -121,12 +121,6 @@ void Database<T>::GenerateRandomStatsTeam() //called after heroes are purchased 
 template <class T>
 void Database<T>::GenerateRandomEnemyTeam(vector<SmashHero*> EnemyMembers)	// This function is only called in teamBattle() when creating an enemy team.
 {
-	// The main purpose of this function is to randomly pick a number of teamList.size() heroes and put them into vector of enemyTeamList.
-	// I don't know how to read in teamList.size() number of enemy heroes from file to vector of enemyTeamList.
-	// The auto generation of stats for the enemy team is already handled after this function is called.
-	// I also don't know if the vector will be properly passed back to teamBattle().
-	// Maybe void is the wrong type of function to use to pass back the randomized vector...
-	
 	for (int i = 0; i < teamList.size(); i++) {
 		int rngesus = rand() % 100 + 1;
 		if (rngesus > 98) {
@@ -155,7 +149,6 @@ void Database<T>::GenerateRandomEnemyTeam(vector<SmashHero*> EnemyMembers)	// Th
 	
 }
 
-//Increments the stats? of the heroes in the team and gives some gold value
 template <class T>
 bool Database<T>::teamBattle()
 {
