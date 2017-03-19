@@ -9,6 +9,7 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include <vector>
 
 using namespace std;
 
@@ -19,14 +20,16 @@ private:
 	fstream heroList; //List of potential heroes you can get
 	HashTable hashTable; //Hashtable of currently owned Heroes
 	BST<T> binarySearchTree; //Sorted tree of currently owned Heroes
-	int teamList[5]; //primaryKeys of last used Team
+	//int teamList[5]; //primaryKeys of last used Team
+	vector<int> teamList; //vector of primaryKeys of last used Team
 	int gold; //Gold value gained through doing battles
+
+	vector<int> enemyteamList; //vector of primaryKeys of randomly generated Enemy Team.
 
 public:
 	Database(fstream& saveFile);
 
 	SmashHero* purchaseNewHero(int goldCost);
-	void teamBattle();
 	void sellHero(int primaryKey);
 	void displayHeroList();
 	void displayOrderedList();
@@ -39,6 +42,9 @@ public:
 	void insertNewHero(T data);
 	void displayTeam();
 	void displayHero(int primaryKey);
+
+	///////////////////////////////// Battle System
+	bool teamBattle();
 
 	~Database();
 };
@@ -63,8 +69,265 @@ Database<T>::Database(fstream& saveFile) {
 
 //Increments the stats? of the heroes in the team and gives some gold value
 template <class T>
-void Database<T>::teamBattle() {
+bool Database<T>::teamBattle()
+{
+	///////////////// Initialize your party and the enemy's into vectors for ease of use.
+	vector <SmashHero*> Members;
+	int totalLevels = 0;
+	for (int i = 1; i < teamList.size(); i++)
+	{
+		Members.push_back(hashTable.getItem(teamList[i]));
+		totalLevels += Members[i]->getLevel();
+	}
+	vector <SmashHero*> EnemyMembers;
+	for (int i = 1; i < enemyteamList.size(); i++)
+	{
+		EnemyMembers.push_back(hashTable.getItem(enemyteamList[i]));
+		EnemyMembers[i]->AdjustDifficulty(totalLevels);
+	}
+	int TurnNumber = 1;
+	bool battleResult = false;
+	bool battlecompleted = false;
+	do
+	{
+		cout << "Turn " << TurnNumber << ": " << endl;
+		///////////////// Prints out the members in party and enemy team as well as randomizes everyone's turn order.
+		for (int i = 1; i < teamList.size(); i++)
+		{
+			if (Members[i] != NULL)
+			{
+				cout << "\t" << Members[i]->getHeroName() << " HP: " << Members[i]->getHeroHP() << "/" << Members[i]->getHeroMaxHP;
+				Members[i]->setTurnOrder();
+			}
+			if (EnemyMembers[i] != NULL)
+			{
+				cout << "\t" << EnemyMembers[i]->getHeroName() << " HP: " << EnemyMembers[i]->getHeroHP() << "/" << EnemyMembers[i]->getHeroMaxHP;
+				EnemyMembers[i]->setTurnOrder();
+			}
+			cout << endl;
+		}
+		///////////////// Initiate combat. Go by turn order and randomize target. Check if attack missed. Always check if HP is already 0 or below 0. If so, end turn for that hero or enemy.
+		for (int i = 1; i < 11; i++)											// first for loop is for Turn order.
+		{
+			for (int j = 1; j < teamList.size(); j++)							// second for loop will loop through each hero and enemy to find who has the Turn order i.
+			{
+				if (Members[j]->getTurnOrder() == i)							// if Member j has Turn Order i, then proceed with combat.
+				{
+					if (Members[j]->isKnockedOut() == false)							// if Member j is not knocked out, proceed with picking a target.
+					{
+						bool isAttackSuccessful = false;
+						do                                                      // exits the do while loop when we have made a successful attack.
+						{
+							int attackpower = Members[j]->getAttackPower();		// get its attack power
+							int k = rand() % enemyteamList.size() - 1;			// randomize its target.
+							if (EnemyMembers[k]->isKnockedOut() == false)				// checks if the target is already knocked out. If not, then search for another target.
+							{
+								if (Members[j]->didWeHit() == false)						// Hit chance mechanic
+								{
+									cout << "Your " << Members[j]->getHeroName() << " missed its attack!" << endl;
+									isAttackSuccesful = true;					// Target dodged the attack so end turn for Member j.
+								}
+								else
+								{
+									int defensepower = EnemyMembers[k]->getDefensePower();
+									attackpower = attackpower - defensepower;
+									///////////////////////////////////// Graze damage mechanic in case attackpower became 0 or negative after subtracting defensepower from it.
+									if (attackpower <= 0)						
+									{
+										if (Members[j]->getLevel() <= 15)
+										{
+											attackpower = rand() % 5 - 3;
+										}
+										else if (Members[j]->getLevel() > 15 && Members[j]->getLevel() <= 50)
+										{
+											attackpower = rand() % 8 - 6;
+										}
+										else if (Members[j]->getLevel() > 50 && Members[j]->getLevel() <= 100)
+										{
+											attackpower = rand() % 13 - 8;
+										}
+										else if (Members[j]->getLevel() > 100 && Members[j]->getLevel() <= 300)
+										{
+											attackpower = rand() % 18 - 15;
+										}
+										else if (Members[j]->getLevel() > 300 && Members[j]->getLevel() <= 600)
+										{
+											attackpower = rand() % 25 - 18;
+										}
+										else
+										{
+											attackpower = rand() % 35 - 28;
+										}
+									}
+									EnemyMembers[k]->LoseHP(attackpower);		// and then attack that target.
+									cout << "Your " << Members[j]->getHeroName() << " attacked the enemy's " << EnemyMembers[k]->getHeroName() << " for " << attackpower;
+									////////////////////////////////////// print out the resultant HP of the target or if its knocked out.
+									if (EnemyMembers[k]->isKnockedOut() == false) { cout << " Their " << EnemyMembers[k]->getHeroName() << " is now at HP: " << EnemyMembers[k]->getHeroHP() << "/" << EnemyMembers[k]->getHeroMaxHP() << endl; }
+									else if (EnemyMembers[k]->isKnockedOut() == true) { cout << " Their " << EnemyMembers[k]->getHeroName() << " has been knocked out!" << endl; }
+									isAttackSuccessful = true;
+								}
+							}
+						} while (!isAttackSuccessful);
+					}
+				}
+				else if (EnemyMembers[j]->getTurnOrder() == i)					// if EnemyMember j has Turn Order i, then proceed with combat.
+				{
+					if (EnemyMembers[j]->isKnockedOut() == false)						// if EnemyMember j is not knocked out, proceed with picking a target.
+					{
+						bool isAttackSuccessful = false;
+						do                                                      // exits the do while loop when the enemy have made a successful attack.
+						{
+							int attackpower = EnemyMembers[j]->getAttackPower();// get its attack power
+							int k = rand() % teamList.size() - 1;				// randomize its target.
+							if (!Members[k]->isKnockedOut())					// checks if the target is already knocked out. If not, then search for another target.
+							{
+								if (!EnemyMembers[j]->didTheyHit())					// Hit chance mechanic
+								{
+									cout << "Your " << EnemyMembers[j]->getHeroName() << " missed its attack!" << endl;
+									isAttackSuccesful = true;					// Target dodged the attack so end turn for EnemyMember j.
+								}
+								else
+								{
+									Members[k]->LoseHP(attackpower);			// and then attack that target.
+									cout << "The enemy's " << EnemyMembers[j]->getHeroName() << " attacked your " << Members[k]->getHeroName() << " for " << attackpower;
+									////////////////////////////////////// print out the resultant HP of the target or if its knocked out.
+									if (Members[k]->isKnockedOut() == false) { cout << " Our " << Members[k]->getHeroName() << " is now at HP: " << Members[k]->getHeroHP() << "/" << Members[k]->getHeroMaxHP() << endl; }
+									else if (Members[k]->isKnockedOut() == true) { cout << " Our " << Members[k]->getHeroName() << " has been knocked out!" << endl; }
+									isAttackSuccessful = true;
+								}
+							}
+						} while (!isAttackSuccessful);
+					}
+				}
+			}
+		}
+		////////////////// now check which team won by counting knocked out members.
+		int knockedout = 0;
+		int enemyknockedout = 0;
+		for (int i = 1; i < teamList.size(); i++)
+		{
+			if (Members[i]->isKnockedOut() == true)
+			{
+				knockedout++;
+			}
+			else if (EnemyMembers[i]->isKnockedOut() == true)
+			{
+				enemyknockedout++;
+			}
+		}
+		if (knockedout == teamList.size())
+		{
+			cout << endl << "Your team has been wiped out! You have lost this battle!" << endl;
+			battlecompleted = true;	// exit out the loop since we lost.
+			battleResult = false;	// false for we lost.
+		}
+		else if (enemyknockedout == enemyteamList.size())
+		{
+			cout << endl << "The enemy team has been wiped out! You have won this battle!" << endl;
+			battlecompleted = true;	// exit out the loop since we won.
+			battleResult = true;	// true for we won.
+		}
+		else
+		{
+			cout << endl << "Turn " << TurnNumber << " has been completed." << endl;
+			TurnNumber++;			// After Turn is completed, move to the next turn until either team is wiped out.
+		}
+		system("PAUSE");			// This allows the user to read what happened.
+		system("cls");
+	} while (!battlecompleted);
+	////////////////////////// distribute gold and/or exp and call LevelUp if won to improve Attack and Defense stat.
 
+	if (battleResult == true)		// if we won, reward us.
+	{
+		cout << "===================Victory!==================\n";
+		int chance = rand() % 100 - 1; // rolling for increased gold and EXP reward.
+									   // considering reducing the reward based on number of knocked out party members...
+		if (chance <= 20)
+		{
+			gold += 250;
+			cout << "You have earned a pittance of 250 gold for a total of " << gold << endl;
+			for (int i = 0; i < teamList.size(); i++)
+			{
+				if (Members[i]->isKnockedOut)	// if this party member is knocked out, they gain only half EXP.
+				{
+					Members[i]->setEXP(15);
+				}
+				else
+				{
+					Members[i]->setEXP(30);
+				}
+			}
+		}
+		else if (chance > 20 && chance < 90)
+		{
+			gold += 500;
+			cout << "You have earned a reward of 500 gold for a total of " << gold << endl;
+			for (int i = 0; i < teamList.size(); i++)
+			{
+				if (Members[i]->isKnockedOut)	// if this party member is knocked out, they gain only half EXP.
+				{
+					Members[i]->setEXP(25);
+				}
+				else
+				{
+					Members[i]->setEXP(50);
+				}
+			}
+		}
+		else if (chance >= 90)
+		{
+			gold += 750;
+			cout << "Congratulations! Lady Luck favors you and gifts you 750 gold for a grand total of " << gold << endl;
+			for (int i = 0; i < teamList.size(); i++)
+			{
+				if (Members[i]->isKnockedOut)	// if this party member is knocked out, they gain only half EXP.
+				{
+					Members[i]->setEXP(35);
+				}
+				else
+				{
+					Members[i]->setEXP(75);
+				}
+			}
+		}
+	}
+	else
+	{
+		cout << "===================You Lost!==================\n";
+		int chance = rand() % 100 - 1; // rolling for increased gold and EXP reward.
+									   // considering reducing the reward based on number of knocked out party members...
+		if (chance <= 25)
+		{
+			gold += 50;
+			cout << "You managed to scrounge together a measly 50 gold for a total of " << gold << endl;
+			for (int i = 0; i < teamList.size(); i++)
+			{
+				if (Members[i]->isKnockedOut)	// if this party member is knocked out, they gain only half EXP.
+				{
+					Members[i]->setEXP(5);
+				}
+				else
+				{
+					Members[i]->setEXP(10);
+				}
+			}
+		}
+		else
+		{
+			cout << "You were taken pity upon by a traveling stranger and was gifted 100 gold for a total of " << gold << endl;
+			for (int i = 0; i < teamList.size(); i++)
+			{
+				if (Members[i]->isKnockedOut)	// if this party member is knocked out, they gain only half EXP.
+				{
+					Members[i]->setEXP(10);
+				}
+				else
+				{
+					Members[i]->setEXP(20);
+				}
+			}
+		}
+	}
 }
 
 //Purchases a new hero by RNG
