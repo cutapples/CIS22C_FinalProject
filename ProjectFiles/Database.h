@@ -35,13 +35,13 @@ public:
 	void displayOrderedList();
 	void swapTeamMember(int slot, int primaryKey);
 	void addCustomHero(string attributeLine);
-	void searchByKey(int primaryKey);
 	void printIndentedTree();
 	void displayEfficiency();
 	void saveToFile();
 	void insertNewHero(T data);
 	void displayTeam();
 	void displayHero(int primaryKey);
+	SmashHero* getHero(int primaryKey);
 
 	///////////////////////////////// Battle System
 	void healUs();
@@ -66,8 +66,33 @@ Database<T>::Database(fstream& saveFile) {
 	insert temp SmashHero pointer using Database::insertNewHero
 	*/
 
-	this->saveFile = saveFile;
+	string gold;
+	string tempTeam;
+	string line;
 
+	getline(saveFile, gold);
+
+	this->gold = stoi(gold);
+
+	getline(saveFile, tempTeam);
+
+	int space1 = tempTeam.find("\t");
+	int space2 = tempTeam.find("\t ", space1);
+	int space3 = tempTeam.find("\t ", space2);
+	int space4 = tempTeam.find("\t ", space3);
+
+	teamList[0] = stoi(tempTeam.substr(0, space1));
+	teamList[1] = stoi(tempTeam.substr(space1, space2));
+	teamList[2] = stoi(tempTeam.substr(space2, space3));
+	teamList[3] = stoi(tempTeam.substr(space3, space4));
+	teamList[4] = stoi(tempTeam.substr(space4, 1));
+
+	while (!saveFile.eof()) {
+		SmashHero* ptr;
+		getline(saveFile, line);
+		ptr = new SmashHero(line);
+		insertNewHero(ptr);
+	}
 }
 
 template <class T>
@@ -410,7 +435,6 @@ SmashHero* Database<T>::purchaseNewHero(int goldCost) {
 	this->gold -= goldCost;
 
 	//Generating a random number to pull from the hero list
-	srand(time(NULL));
 	int rngesus = rand() % 100 + 1;
 	if (rngesus > 98) {
 		rngesus = rand() % 6;
@@ -435,7 +459,8 @@ SmashHero* Database<T>::purchaseNewHero(int goldCost) {
 	SmashHero* tempPtr = new SmashHero(line);
 
 	//Insert new hero into the Hash Table and BST
-
+	insertNewHero(tempPtr);
+	
 	//Returning the tempPtr to be used in main
 	return tempPtr;
 }
@@ -452,9 +477,9 @@ void Database<T>::sellHero(int primaryKey) {
 	*/
 	SmashHero* tempPtr = hashTable.getItem(primaryKey);
 	if (tempPtr != nullptr) {
-		//Add Gold?
-		//Call hashTable and BST delete functions
-		//hashTable.deleteItem(tempPtr);
+		this->gold += (5 - tempPtr->getRarityIndex) * 10;
+		binarySearchTree.remove(*tempPtr);
+		hashTable.removeItem(tempPtr);
 		delete tempPtr;
 	}
 }
@@ -462,17 +487,13 @@ void Database<T>::sellHero(int primaryKey) {
 //Displays the hero list in the hash table sequence
 template <class T>
 void Database<T>::displayHeroList() {
-	/*
-	call HashTable display function
-	*/
+	cout << hashTable;
 }
 
 //Displays the hero list in order using the BST
 template <class T>
 void Database<T>::displayOrderedList() {
-	/*
-	call BST display inOrder function
-	*/
+	binarySearchTree.print_inOrder();
 }
 
 //Switches the team list slot to the new primaryKey
@@ -485,31 +506,19 @@ void Database<T>::swapTeamMember(int slot, int primaryKey) {
 template <class T>
 void Database<T>::addCustomHero(string attributeLine) {
 	SmashHero* tempPtr = new SmashHero(attributeLine);
-	//Call the HashTable and BST insert functions
-}
-
-//Searches the Hash Table for the primary key and displays the hero if found
-template <class T>
-void Database<T>::searchByKey(int primaryKey) {
-	/*
-	Call Hash Table search function and display the hero with that key
-	*/
+	insertNewHero(tempPtr);
 }
 
 //Prints out the tree indented by height
 template <class T>
 void Database<T>::printIndentedTree() {
-	/*
-	Calls the BST print indented tree function
-	*/
+	binarySearchTree.print_preOrder();
 }
 
 //Displays the efficiency statistics of the Hash Table
 template <class T>
 void Database<T>::displayEfficiency() {
-	/*
-	Calls the Hash Table display efficiency function
-	*/
+	hashTable.displayEfficiency();
 }
 
 //Saves the current data set to the file
@@ -524,9 +533,8 @@ void Database<T>::saveToFile() {
 
 template <class T>
 void Database<T>::insertNewHero(T data) {
-	/*
-	Calls the HashTable and BST insert functions passing in the SmashHero pointer
-	*/
+	binarySearchTree.insert(*data);
+	hashTable.addItem(data);
 }
 
 //Displays the current team (Still needs some special graphic or something)
@@ -547,6 +555,13 @@ void Database<T>::displayHero(int primaryKey) {
 	if (tempPtr != nullptr) {
 		cout << *tempPtr;
 	}
+}
+
+//Returns a pointer to the hero that is searched for
+template <class T>
+SmashHero* Database<T>::getHero(int primaryKey) {
+	SmashHero* tempPtr = this->hashTable.getItem(primaryKey);
+	return tempPtr;
 }
 
 #endif DATABASE_H
