@@ -516,6 +516,14 @@ void Database<T>::displayEfficiency() {
 //Saves the current data set to the file
 template <class T>
 void Database<T>::saveToFile() {
+	
+	    saveFile.clear();
+    
+    saveFile << this->primaryKey << "\t" << this->getHeroName() << "\t" << this->getRarityIndex() << "\t" << this->getHeroHP() << "\t" << this->getHeroMaxHP << "\t" << this->getTurnOrder() << "\t" << this->getAttackPower() << "\t" << this->getDefensePower() << "\t" << this->getLevel() << "\t" << this->getEXP() << "\n";
+        saveFile << hashTable;
+    
+
+	
 	/*
 	Clear old save file
 	Save the current team and current gold onto the first 2 lines
