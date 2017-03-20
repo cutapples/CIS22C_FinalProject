@@ -3,8 +3,7 @@
 #include <cstddef>
 
 template <class T>
-class Node
-{
+class Node {
 public:
 	T data;
 	Node * left;

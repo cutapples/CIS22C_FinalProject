@@ -18,10 +18,8 @@ public:
 	SmashHero* getItem(int key);
 	void addItem(SmashHero* data);
 	void removeItem(int key);
-	
+
 	friend ostream& operator<<(ostream& os, HashTable& hashTable);
 };
-
-
 
 #endif HASHTABLE_H

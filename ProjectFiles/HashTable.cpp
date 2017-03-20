@@ -61,14 +61,14 @@ SmashHero* HashTable::getItem(int key) {
 	if (entry != nullptr) {
 		while (entry != nullptr) { // parses through the hash table
 			if (*entry->data == key) {
-				if (*entry->data == temp->data->getPrimaryKey()){
+				if (*entry->data == temp->data->getPrimaryKey()) {
 					flag = true;
 					return entry->data;
 				}
 				else {
 					//Relinking middle nodes
 					entry->prev->next = entry->next;
-					if(entry->next != nullptr) {
+					if (entry->next != nullptr) {
 						entry->next->prev = entry->prev;
 					}
 
@@ -124,14 +124,14 @@ void HashTable::removeItem(int key) {
 	HashNode*entry = hTable[hashy];
 	HashNode* temp = hTable[hashy];
 
-	while (entry != nullptr){
+	while (entry != nullptr) {
 		if (*entry->data == key) {
 			//Relinking middle nodes
-			if (entry->prev != nullptr){
+			if (entry->prev != nullptr) {
 				entry->prev->next = entry->next;
 			}
 			else {
-				hTable[hashy] = entry->next;	
+				hTable[hashy] = entry->next;
 			}
 			if (entry->next != nullptr) {
 				entry->next->prev = entry->prev;
@@ -144,8 +144,8 @@ void HashTable::removeItem(int key) {
 }
 
 ostream& operator<<(ostream& os, HashTable& hashTable) {
-	for (int i = 0; i < hashTable.tableSize; i++){
-		if (hashTable.hTable[i] != nullptr){
+	for (int i = 0; i < hashTable.tableSize; i++) {
+		if (hashTable.hTable[i] != nullptr) {
 			HashNode* tempPtr = hashTable.hTable[i];
 			os << *tempPtr->data << endl;
 			while (tempPtr->next != nullptr) {
