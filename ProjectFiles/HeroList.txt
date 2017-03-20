@@ -1,0 +1,58 @@
+0001	Fox	1
+0002	Cloud	1
+0003	Sheik	1
+0004	Mario	1
+0005	Sonic	1
+0006	Fox	1
+0007	Ryu	2
+0008	Mewtwo	2
+0009	Bayonetta	2
+0010	Pikachu	3
+0011	Metaknight	3
+0012	Villager	3
+0013	Megaman	3
+0014	Ness	3
+0015	Corrin	3
+0016	Marth	3
+0017	Greninja	3
+0018	Lucario	3
+0019	Yoshi	3
+0020	Pit	3
+0021	Peach	3
+0022	Rob	3
+0023	Luigi	3
+0024	Olimar	3
+0025	Robin	3
+0026	Bowser	3
+0027	Lucas	3
+0028	Wario	3
+0029	Ike	3
+0030	Lucina	3
+0031	Palutena	3
+0032	Kirby	3
+0033	Link	3
+0034	Shulk	4
+0035	Samus	4
+0036	Falco	4
+0037	Roy	4
+0038	Charizard	4
+0039	Zelda	4
+0040	Ganondorf	4
+0041	JigglyPuff	4
+0042	Mr. Game & Watch	4
+0043	Duck Hunt	4
+0044	Pac-Man	4
+0045	Little Mac	4
+0046	Wii Fit Trainer	4
+0047	Bowser Jr.	4
+0048	Dr. Mario	4
+0049	King Dedede	4
+0050	Mii Gunner	4
+0051	Mii Brawler	4
+0052	Mii Swordfighter	4
+0053	Rosalina & Luma	4
+0054	Zero Suit Samus	4
+0055	Young Link	4
+0056	Captain Falcon	4
+0057	Donkey Kong	4
+0058	Dark Pit	4

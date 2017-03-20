@@ -1,0 +1,29 @@
+0
+1	2	3	4	5
+0022	Rob	3
+0023	Luigi	3
+0015	Corrin	3
+0025	Robin	3
+0004	Mario	1
+0005	Sonic	1
+0011	Metaknight	3
+0012	Villager	3
+0006	Fox	1
+0007	Ryu	2
+0018	Lucario	3
+0002	Cloud	1
+0019	Yoshi	3
+0020	Pit	3
+0021	Peach	3
+0024	Olimar	3
+0008	Mewtwo	2
+0009	Bayonetta	2
+0003	Sheik	1
+0013	Megaman	3
+0014	Ness	3
+0010	Pikachu	3
+0016	Marth	3
+0001	Fox	1
+0017	Greninja	3
+
+
