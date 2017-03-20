@@ -9,26 +9,19 @@ private:
 	int primaryKey;
 	string heroName;
 	int rarityIndex;
-	//stats
+
+	//Extra Stats
+	int HP;
+	int maxHP;
+	int TurnOrder;
+	int ATK;
+	int DEF;
+	int EXP;
+	int Level;
 
 public:
 	SmashHero() {};
-	SmashHero(string line) {
-		//The tabs are being found from the input line that we ghet from the file.
-		int tab1 = line.find("\t");
-		int tab2 = line.find("\t", tab1 + 1);
-		int tab3 = line.find("\t", tab2 + 1);
-
-		//The string is being parsed into seperate variables.
-		string primaryKey = line.substr(0, tab1);
-		string heroName = line.substr(tab1 + 1, tab2 - tab1 - 1);
-		string rarity = line.substr(tab2 + 1, tab2 - tab3 - 1);
-
-		//The functions are beijng called and each SmashHero attribute is being set with the variable being passed in.
-		SmashHero::setPrimaryKey(stoi(primaryKey));
-		SmashHero::setHeroName(heroName);
-		SmashHero::setRarity(stoi(rarity));
-	};
+	SmashHero(string line);
 
 	int getPrimaryKey() { return this->primaryKey; };
 	string getHeroName() { return this->heroName; };
@@ -37,34 +30,53 @@ public:
 	void setPrimaryKey(int primaryKey) { this->primaryKey = primaryKey; };
 	void setHeroName(string heroName) { this->heroName = heroName; };
 	void setRarity(int rarityIndex) { this->rarityIndex = rarityIndex; };
-	friend ostream& operator<<(ostream& os, SmashHero& hero) {
 
-		//Case being used if the Heroes are being output to the screen.
-
-		// Case being used if the heroes are going to be saved into a file
-		os << hero.primaryKey << "\t";
-		os << hero.heroName << "\t";
-		os << hero.rarityIndex << "\t";
-
-
-		return os;
-	}
+	//Operator Overloading
+	friend ostream& operator<<(ostream& os, SmashHero& hero);
 
 	friend bool operator>(SmashHero hero, int userKey) {
 		return (hero.getPrimaryKey() > userKey);
-	}
+	};
 
 	friend bool operator<(SmashHero hero, int userKey) {
-		return(hero.getPrimaryKey() < userKey);
-	}
+		return (hero.getPrimaryKey() < userKey);
+	};
 
 	friend bool operator==(SmashHero hero, int userKey) {
-		return(hero.getPrimaryKey() == userKey);
-	}
+		return (hero.getPrimaryKey() == userKey);
+	};
 
-	friend bool operator!=(SmashHero hero, int userKey) {
-		return (hero.getPrimaryKey() != userKey);
-	}
+	friend bool operator>(SmashHero hero, SmashHero hero2) {
+		return (hero.getPrimaryKey() > hero2.getPrimaryKey());
+	};
+
+	friend bool operator<(SmashHero hero, SmashHero hero2) {
+		return (hero.getPrimaryKey() < hero2.getPrimaryKey());
+	};
+
+	friend bool operator==(SmashHero hero, SmashHero hero2) {
+		return (hero.getPrimaryKey() == hero2.getPrimaryKey());
+	};
+
+	//////// functions used by battle system.
+	void GenerateStats();
+	int getLevel() { return this->Level; };
+	void AdjustDifficulty(int totalLevels);
+	//void setHeroHP(int newHP);
+	void HeroisHealed();
+	int getHeroHP();
+	void LoseHP(int attackpower);
+	//void setHeroMaxHP(int newmaxHP);
+	int getHeroMaxHP() { return this->maxHP; };
+	void setTurnOrder() { this->TurnOrder = rand() % 10 + 1; };
+	int getTurnOrder() { return this->TurnOrder; };
+	//void setAttackPower(int newATK);
+	int getAttackPower() { return this->ATK; };
+	int getDefensePower() { return this->DEF; };
+	bool isKnockedOut();
+	bool didWeHit();
+	bool didTheyHit();
+	void setEXP(int amount);
 
 };
 

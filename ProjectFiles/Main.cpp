@@ -2,37 +2,29 @@
 #include <string>
 #include <fstream>
 
-#include "BST.h"
 #include "HashTable.h"
-#include "Database.h"
+#include "BST.h"
 #include "SmashHero.h"
+#include "Database.h"
 
 using namespace std;
 
 void displayLoadingScreen();
 void displayMainMenu();
 
-void battleMenu(Database<SmashHero*>& database);
-void purchaseMenu(Database<SmashHero*>& database);
-void sellMenu(Database<SmashHero*>& database);
-void heroListMenu(Database<SmashHero*>& database);
-void teamMenu(Database<SmashHero*>& database);
-void optionsMenu(Database<SmashHero*>& database);
+void battleMenu(Database<SmashHero>& database);
+void purchaseMenu(Database<SmashHero>& database);
+void sellMenu(Database<SmashHero>& database);
+void heroListMenu(Database<SmashHero>& database);
+void teamMenu(Database<SmashHero>& database);
+void optionsMenu(Database<SmashHero>& database);
 
 int main() {
 
+	srand(time(NULL));
 	displayLoadingScreen();
-	fstream saveFile("SaveFile.txt");
-	if (saveFile.fail()) {
-		cout << "Error: Save file not found.\nCreating empty save file.\n";
-		saveFile.close();
-		saveFile.open("SaveFile.txt", ios::out);
-		saveFile.close();
-		saveFile.open("SaveFile.txt");
-		cout << "Empty save file created.\n";
-	}
 	cout << "Initializing database...\n";
-	Database<SmashHero*> database(saveFile);
+	Database<SmashHero> database;
 	cout << "Database successfully intialized.\n";
 
 	system("pause");
@@ -75,7 +67,6 @@ int main() {
 		}
 
 		system("pause");
-		system("cls");
 
 	} while (!ExitMainMenu);
 
@@ -108,26 +99,8 @@ Display the team on a special battle screen
 use Database::teamBattle() to get the rewards
 Display gold added and increased stats?
 */
-void battleMenu(Database<SmashHero*>& database) 
-{
-						//Mental Map
-	//Format: /t getPartyMember1 << "HP: " << getCurrentHealth << "/" << getMaxHealth << endl;
-	//We autobattle for each turn. We pause the system for 2-3 secs(?) so as to not have the system display each turn instantaneously.
-	//When we get each party member, we assign each a number 1-5 based on number of members in party. Enemy team will get 6-10.
-	//Each turn we randomize int variable called OurTurnOrder(?) from 1-5 and then another variable called TheirTurnOrder from 6-10.
-
-	//Dodge mechanic: int variable called dodgeChance will randomize 0-25 chance to miss and 26-100 to hit when the function is called in Database. Return 0 for miss and 1 for hit.
-	//if statements for return value of 0 for miss and 1 for hit. If miss, do not call the attack function. If hit, call the attack function. 
-	
-	//Pass the TheirTurnOrder's getCurrentHealth to Attack function so the function knows the Attack function will randomize int variable 
-	//AttackPower from 1 to getCurrentHealth. If balance issue occur, then 1 to getCurrentHealth - 2. Return int attack power.
-	//either handle arithmetic operation getCurrentHealth - attackpower in main or create function in Database to handle it.
-	//if statements to handle if result is negative or not. If < 0, either delete member from cout statements and stop calling its functions(?).
-
-	/t	Party Member 1 HP: 10/10	/t Enemy Member 1 HP: 10/10
-	/t	Party Member 2 HP: 12/12	/t Enemy Member 2 HP: 12/12
-	/t	Party Member 3 HP: 15/15	/t Enemy Member 3 HP: 15/15
-	Turn 1:
+void battleMenu(Database<SmashHero>& database) {
+	bool battle = database.teamBattle();
 }
 
 /*
@@ -137,8 +110,12 @@ Show current gold and how much is to be subtracted
 use Database::purchaseNewHero(int goldCost) to create and insert the new hero which returns back a pointer to be used
 Display the new hero
 */
-void purchaseMenu(Database<SmashHero*>& database) {
-
+void purchaseMenu(Database<SmashHero>& database) {
+	cout << "====================Gachapon=====================" << endl;
+	cout << "Key\tName\tRarity" << endl;
+	SmashHero* newHero = database.purchaseNewHero(100);
+	cout << *newHero;
+	cout << "\nYou now have " << database.getGold() << " gold.\n";
 }
 
 /*
@@ -148,16 +125,28 @@ use Database::displayHero(int primaryKey)
 Confirm delete
 use Database::sellHero(int primaryKey)
 */
-void sellMenu(Database<SmashHero*>& database) {
-
+void sellMenu(Database<SmashHero>& database) {
+	cout << "====================Sell Menu====================" << endl;
+	cout << "Please enter the key of a hero you would like to sell: ";
+	int primaryKey;
+	cin >> primaryKey;
+	cout << endl;
+	database.displayHero(primaryKey);
+	cout << "\nIs this the hero you would like to sell?(Y/N): ";
+	char sellChoice;
+	cin >> sellChoice;
+	if (sellChoice == 'N' || sellChoice == 'n') {
+		return;
+	}
+	database.sellHero(primaryKey);
 }
 
 /*
 Hero List Menu
-HashTable inSequence function call
+Database::displayHeroList()
 */
-void heroListMenu(Database<SmashHero*>& database) {
-
+void heroListMenu(Database<SmashHero>& database) {
+	database.displayHeroList();
 }
 
 /*
@@ -168,7 +157,7 @@ Prompt user for which slot they want to replace
 Prompt user for a primary key they own to be put into that slot
 Swap Team Member function call
 */
-void teamMenu(Database<SmashHero*>& database) {
+void teamMenu(Database<SmashHero>& database) {
 	database.displayTeam();
 	cout << "\nWhich slot would you like to swap?(6 for exit)";
 	int slotChoice;
@@ -187,7 +176,15 @@ void teamMenu(Database<SmashHero*>& database) {
 /*
 Options Menu
 Extra menu options for project requirements
+1. Add new data							= Database::addCustomHero(string attributeLine)
+2. Delete data							= Database::sellHero(int primaryKey)
+3. Find and display using primary key	= Database::displayHero(int primaryKey)
+4. List data in hash table sequence		= Database::displayHeroList()
+5. List data in key sequence (sorted)	= Database::displayOrderedList()
+6. Print indented tree					= Database::printIndentedTree()
+7. Efficiency							= Database::displayEfficiency()
+8. Exit (Team Choice is the battle menu)
 */
-void optionsMenu(Database<SmashHero*>& database) {
+void optionsMenu(Database<SmashHero>& database) {
 
 }

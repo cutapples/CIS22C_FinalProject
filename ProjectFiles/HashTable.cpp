@@ -21,6 +21,23 @@ HashTable::HashTable() {
 
 HashTable::~HashTable() {
 	// destructor for the Hashtable
+	for (int i = 0; i < tableSize; i++) {
+		if (hTable[i] != nullptr) {
+			HashNode* tempPtr = hTable[i];
+			//Find the last node in the linked list
+			while (tempPtr->next != nullptr) {
+				tempPtr = tempPtr->next;
+			}
+			//Backtrack through the linked list deleting nodes as you go through
+			while (tempPtr->prev != nullptr) {
+				tempPtr = tempPtr->prev;
+				delete tempPtr->next->data;
+				delete tempPtr->next;
+			}
+			delete tempPtr->data;
+			delete tempPtr;
+		}
+	}
 	delete[] hTable;
 }
 
@@ -44,14 +61,14 @@ SmashHero* HashTable::getItem(int key) {
 	if (entry != nullptr) {
 		while (entry != nullptr) { // parses through the hash table
 			if (*entry->data == key) {
-				if (*entry->data == temp->data->getPrimaryKey()){
+				if (*entry->data == temp->data->getPrimaryKey()) {
 					flag = true;
 					return entry->data;
 				}
 				else {
 					//Relinking middle nodes
 					entry->prev->next = entry->next;
-					if(entry->next != nullptr) {
+					if (entry->next != nullptr) {
 						entry->next->prev = entry->prev;
 					}
 
@@ -98,33 +115,6 @@ void HashTable::addItem(SmashHero* data) {
 	}
 }
 
-/*
-int hashy = Hash(key);
-HashNode *entry = hTable[hashy];
-if (entry == nullptr){ // Checks if the hash table is empty
-entry = new HashNode;
-entry->data = data;
-entry->key = key;
-entry->next = nullptr;
-entry->prev = nullptr;
-hTable[hashy] = entry;
-top[hashy] = entry;
-}
-else{
-while (entry != nullptr){ // If there are items within the hash table
-entry = entry->next;
-}
-entry = new HashNode;
-entry->data = data;
-entry->key = key;
-entry->next = nullptr;
-entry->prev = top[hashy];
-top[hashy]->next = entry;
-top[hashy] = entry;
-}
-
-*/
-
 void HashTable::removeItem(int key) {
 	// Hash the key
 	// If the hashNode is null do nothing 
@@ -132,27 +122,40 @@ void HashTable::removeItem(int key) {
 	// remove the item then resets the pointer point to the correct spot
 	int hashy = Hash(key);
 	HashNode*entry = hTable[hashy];
+	HashNode* temp = hTable[hashy];
 
-	if (entry->key != key || entry == nullptr) {
-		std::cout << "No element found." << std::endl;
-		return;
-	}
 	while (entry != nullptr) {
-		if (entry->next == nullptr) {
-			if (entry->prev == nullptr) {
-				hTable[hashy] = nullptr;
-				top[hashy] = nullptr;
-				delete entry;
-				break;
+		if (*entry->data == key) {
+			//Relinking middle nodes
+			if (entry->prev != nullptr) {
+				entry->prev->next = entry->next;
 			}
 			else {
-				top[hashy] = entry->prev;
-				top[hashy]->next = nullptr;
-				delete entry;
-				entry = top[hashy];
+				hTable[hashy] = entry->next;
 			}
+			if (entry->next != nullptr) {
+				entry->next->prev = entry->prev;
+			}
+			delete entry;
+			return;
 		}
 		entry = entry->next;
 	}
-
 }
+
+ostream& operator<<(ostream& os, HashTable& hashTable) {
+	for (int i = 0; i < hashTable.tableSize; i++) {
+		if (hashTable.hTable[i] != nullptr) {
+			HashNode* tempPtr = hashTable.hTable[i];
+			os << *tempPtr->data << endl;
+			while (tempPtr->next != nullptr) {
+				tempPtr = tempPtr->next;
+				os << *tempPtr->data << endl;
+			}
+		}
+	}
+	return os;
+}
+
+//displayInsequence()
+// displayEfficiency()
