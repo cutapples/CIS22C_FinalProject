@@ -6,6 +6,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <stdlib.h>
 
 #include "HashTable.h"
 #include "BST.h"
@@ -46,7 +47,7 @@ public:
 	bool teamBattle();
 	void healUs();
 	void GenerateRandomStatsTeam();
-	void GenerateRandomEnemyTeam(vector<SmashHero*> EnemyMembers);
+	void GenerateRandomEnemyTeam(vector<SmashHero*>& EnemyMembers);
 	
 	~Database();
 };
@@ -112,12 +113,21 @@ Database<T>::Database() {
 	while (!saveFile.eof()) {
 		SmashHero* ptr;
 		getline(saveFile, line);
-		ptr = new SmashHero(line);
-		insertNewHero(ptr);
+		if (line != ""){
+			ptr = new SmashHero(line);
+			insertNewHero(ptr);
+		}
 	}
 
 	saveFile.seekg(saveFile.beg);
 	heroList.seekg(heroList.beg);
+
+	//Initializing Team
+	for (int i = 0; i < teamList.size(); i++){
+		SmashHero* tempPtr = hashTable.getItem(teamList[i]);
+		tempPtr->GenerateStats();
+	}
+
 }
 
 //Purchases a new hero by RNG
@@ -132,21 +142,22 @@ SmashHero* Database<T>::purchaseNewHero(int goldCost) {
 	Call insertNewHero function
 	*/
 	//Removing gold cost
+	srand(time(NULL));
 	this->gold -= goldCost;
 
 	//Generating a random number to pull from the hero list
-	int rngesus = rand() % 100 + 1;
+	int rngesus = (rand() * 37) % 100 + 1;
 	if (rngesus > 98) {
-		rngesus = rand() % 6;
+		rngesus = (rand() * 71) % 6;
 	}
 	else if (rngesus > 85) {
-		rngesus = rand() % 3 + 6;
+		rngesus = (rand() * 197) % 3 + 6;
 	}
 	else if (rngesus > 60) {
-		rngesus = rand() % 24 + 9;
+		rngesus = (rand() * 613) % 24 + 9;
 	}
 	else {
-		rngesus = rand() % 24 + 33;
+		rngesus = (rand() * 269) % 24 + 33;
 	}
 
 	//Finding the hero in the hero list and creating it
@@ -156,13 +167,19 @@ SmashHero* Database<T>::purchaseNewHero(int goldCost) {
 		getline(this->heroList, line);
 	}
 	this->heroList.seekg(this->heroList.beg);
-	SmashHero* tempPtr = new SmashHero(line);
+	if (line != ""){
+		SmashHero* tempPtr = new SmashHero(line);
 
-	//Insert new hero into the Hash Table and BST
-	insertNewHero(tempPtr);
+		//Insert new hero into the Hash Table and BST
+		insertNewHero(tempPtr);
 
-	//Returning the tempPtr to be used in main
-	return tempPtr;
+		//Returning the tempPtr to be used in main
+		return tempPtr;
+	}
+	else {
+		SmashHero* tempPtr = nullptr;
+		return tempPtr;
+	}
 }
 
 //Removes a hero from the database by primaryKey
@@ -197,7 +214,7 @@ void Database<T>::displayTeam() {
 	for (int i = 0; i < teamList.size(); i++) {
 		SmashHero* tempPtr = this->hashTable.getItem(this->teamList[i]);
 		if (tempPtr != nullptr) {
-			cout << *tempPtr;
+			cout << *tempPtr << endl;
 		}
 	}
 }
@@ -251,6 +268,18 @@ void Database<T>::saveToFile() {
 	Read the Hash Table in sequence onto the file
 	*/
 	saveFile.clear();
+
+	//Erasing old save file
+	saveFile.close();
+	remove("SaveFile.txt");
+	saveFile.open("SaveFile.txt");
+	if (saveFile.fail()){
+		saveFile.close();
+		saveFile.open("SaveFile.txt", fstream::out);
+		saveFile.close();
+		saveFile.open("SaveFile.txt");
+	}
+
 	saveFile << gold << endl;
 	for (int i = 0; i < teamList.size() - 1; i++) {
 		saveFile << teamList[i] << "\t";
@@ -278,13 +307,13 @@ bool Database<T>::teamBattle() {
 	///////////////// Initialize your party and the enemy's into vectors for ease of use.
 	vector <SmashHero*> Members;
 	int totalLevels = 0;
-	for (int i = 1; i < teamList.size(); i++) {
+	for (int i = 0; i < teamList.size(); i++) {
 		Members.push_back(hashTable.getItem(teamList[i]));
 		totalLevels += Members[i]->getLevel();
 	}
 	vector <SmashHero*> EnemyMembers;
 	GenerateRandomEnemyTeam(EnemyMembers);				// fill up the vector of enemyteamList with random heroes 
-	for (int i = 1; i < EnemyMembers.size(); i++) {
+	for (int i = 0; i < EnemyMembers.size(); i++) {
 		EnemyMembers[i]->AdjustDifficulty(totalLevels);	//auto generate their stats.
 	}
 	int TurnNumber = 1;
@@ -294,7 +323,7 @@ bool Database<T>::teamBattle() {
 	do {
 		cout << "Turn " << TurnNumber << ": " << endl;
 		///////////////// Prints out the members in party and enemy team as well as randomizes everyone's turn order.
-		for (int i = 1; i < teamList.size(); i++) {
+		for (int i = 0; i < teamList.size(); i++) {
 			if (Members[i] != NULL) {
 				cout << "\t" << Members[i]->getHeroName() << " HP: " << Members[i]->getHeroHP() << "/" << Members[i]->getHeroMaxHP();
 				Members[i]->setTurnOrder();
@@ -305,10 +334,11 @@ bool Database<T>::teamBattle() {
 			}
 			cout << endl;
 		}
+		cout << endl;
 		///////////////// Initiate combat. Go by turn order and randomize target. Check if attack missed. Always check if HP is already 0 or below 0. If so, end turn for that hero or enemy.
 		for (int i = 1; i < 11; i++)										// first for loop is for Turn order.
 		{
-			for (int j = 1; j < teamList.size(); j++)						// second for loop will loop through each hero and enemy to find who has the Turn order i.
+			for (int j = 0; j < teamList.size(); j++)						// second for loop will loop through each hero and enemy to find who has the Turn order i.
 			{
 				if (Members[j]->getTurnOrder() == i)						// if Member j has Turn Order i, then proceed with combat.
 				{
@@ -317,13 +347,14 @@ bool Database<T>::teamBattle() {
 						isAttackSuccessful = false;
 						do                                                  // exits the do while loop when we have made a successful attack.
 						{
+							srand(time(NULL));
 							int attackpower = Members[j]->getAttackPower();	// get its attack power
-							int k = rand() % EnemyMembers.size() - 1;		// randomize its target.
+							int k = ((rand() * ((i + 1) * 257)* ((j + 1) * 419))) % EnemyMembers.size();		// randomize its target.
 							if (EnemyMembers[k]->isKnockedOut() == false)	// checks if the target is already knocked out. If not, then search for another target.
 							{
 								if (Members[j]->didWeHit() == false)		// Hit chance mechanic
 								{
-									cout << "Your " << Members[j]->getHeroName() << " missed its attack!" << endl;
+									cout << "Your " << Members[j]->getHeroName() << " missed its attack!" << endl << endl;
 									isAttackSuccessful = true;				// Target dodged the attack so end turn for Member j.
 								}
 								else {
@@ -332,30 +363,31 @@ bool Database<T>::teamBattle() {
 									///////////////////////////////////// Graze damage mechanic in case attackpower became 0 or negative after subtracting defensepower from it.
 									if (attackpower <= 0) {
 										// These values are taken straight from the AdjustDifficulty() from SmashHero.h
+										srand(time(NULL));
 										if (Members[j]->getLevel() <= 15) {
-											attackpower = rand() % 5 - 3;
+											attackpower = ((rand() * ((i + 1) * 257)* ((j + 1) * 419))) % 2 + 3;
 										}
 										else if (Members[j]->getLevel() > 15 && Members[j]->getLevel() <= 50) {
-											attackpower = rand() % 8 - 6;
+											attackpower = ((rand() * ((i + 1) * 257)* ((j + 1) * 419))) % 2 + 6;
 										}
 										else if (Members[j]->getLevel() > 50 && Members[j]->getLevel() <= 100) {
-											attackpower = rand() % 13 - 8;
+											attackpower = ((rand() * ((i + 1) * 257)* ((j + 1) * 419))) % 5 + 8;
 										}
 										else if (Members[j]->getLevel() > 100 && Members[j]->getLevel() <= 300) {
-											attackpower = rand() % 18 - 15;
+											attackpower = ((rand() * ((i + 1) * 257)* ((j + 1) * 419))) % 3 + 15;
 										}
 										else if (Members[j]->getLevel() > 300 && Members[j]->getLevel() <= 600) {
-											attackpower = rand() % 25 - 18;
+											attackpower = ((rand() * ((i + 1) * 257)* ((j + 1) * 419))) % 7 + 18;
 										}
 										else {
-											attackpower = rand() % 35 - 28;
+											attackpower = ((rand() * ((i + 1) * 257)* ((j + 1) * 419))) % 7 + 28;
 										}
 									}
 									EnemyMembers[k]->LoseHP(attackpower);	// and then attack that target.
-									cout << "Your " << Members[j]->getHeroName() << " attacked the enemy's " << EnemyMembers[k]->getHeroName() << " for " << attackpower;
+									cout << "Your " << Members[j]->getHeroName() << " attacked the enemy's " << EnemyMembers[k]->getHeroName() << " for " << attackpower << endl;
 									////////////////////////////////////// print out the resultant HP of the target or if its knocked out.
-									if (EnemyMembers[k]->isKnockedOut() == false) { cout << " Their " << EnemyMembers[k]->getHeroName() << " is now at HP: " << EnemyMembers[k]->getHeroHP() << "/" << EnemyMembers[k]->getHeroMaxHP() << endl; }
-									else if (EnemyMembers[k]->isKnockedOut() == true) { cout << " Their " << EnemyMembers[k]->getHeroName() << " has been knocked out!" << endl; }
+									if (EnemyMembers[k]->isKnockedOut() == false) { cout << " Their " << EnemyMembers[k]->getHeroName() << " is now at HP: " << EnemyMembers[k]->getHeroHP() << "/" << EnemyMembers[k]->getHeroMaxHP() << endl << endl; }
+									else if (EnemyMembers[k]->isKnockedOut() == true) { cout << " Their " << EnemyMembers[k]->getHeroName() << " has been knocked out!" << endl << endl; }
 									isAttackSuccessful = true;
 								}
 							}
@@ -369,21 +401,22 @@ bool Database<T>::teamBattle() {
 						isAttackSuccessful = false;
 						do                                                  // exits the do while loop when the enemy have made a successful attack.
 						{
+							srand(time(NULL));
 							int attackpower = EnemyMembers[j]->getAttackPower();// get its attack power
-							int k = rand() % teamList.size() - 1;			// randomize its target.
+							int k = ((rand() * ((i + 1) * 257)* ((j + 1) * 419))) % teamList.size();			// randomize its target.
 							if (!Members[k]->isKnockedOut())				// checks if the target is already knocked out. If not, then search for another target.
 							{
 								if (!EnemyMembers[j]->didTheyHit())			// Hit chance mechanic
 								{
-									cout << "Your " << EnemyMembers[j]->getHeroName() << " missed its attack!" << endl;
+									cout << "The enemy's " << EnemyMembers[j]->getHeroName() << " missed its attack!" << endl << endl;
 									isAttackSuccessful = true;				// Target dodged the attack so end turn for EnemyMember j.
 								}
 								else {
 									Members[k]->LoseHP(attackpower);		// and then attack that target.
-									cout << "The enemy's " << EnemyMembers[j]->getHeroName() << " attacked your " << Members[k]->getHeroName() << " for " << attackpower;
+									cout << "The enemy's " << EnemyMembers[j]->getHeroName() << " attacked your " << Members[k]->getHeroName() << " for " << attackpower << endl;
 									////////////////////////////////////// print out the resultant HP of the target or if its knocked out.
-									if (Members[k]->isKnockedOut() == false) { cout << " Our " << Members[k]->getHeroName() << " is now at HP: " << Members[k]->getHeroHP() << "/" << Members[k]->getHeroMaxHP() << endl; }
-									else if (Members[k]->isKnockedOut() == true) { cout << " Our " << Members[k]->getHeroName() << " has been knocked out!" << endl; }
+									if (Members[k]->isKnockedOut() == false) { cout << "Our " << Members[k]->getHeroName() << " is now at HP: " << Members[k]->getHeroHP() << "/" << Members[k]->getHeroMaxHP() << endl << endl; }
+									else if (Members[k]->isKnockedOut() == true) { cout << "Our " << Members[k]->getHeroName() << " has been knocked out!" << endl << endl; }
 									isAttackSuccessful = true;
 								}
 							}
@@ -395,7 +428,7 @@ bool Database<T>::teamBattle() {
 		////////////////// now check which team won by counting knocked out members.
 		int knockedout = 0;
 		int enemyknockedout = 0;
-		for (int i = 1; i < teamList.size(); i++) {
+		for (int i = 0; i < teamList.size(); i++) {
 			if (Members[i]->isKnockedOut() == true) {
 				knockedout++;
 			}
@@ -414,7 +447,7 @@ bool Database<T>::teamBattle() {
 			battleResult = true;	// true for we won.
 		}
 		else {
-			cout << endl << "Turn " << TurnNumber << " has been completed." << endl;
+			cout << endl << "Turn " << TurnNumber << " has been completed." << endl << endl;
 			TurnNumber++;			// After Turn is completed, move to the next turn until either team is wiped out.
 		}
 		system("PAUSE");			// This allows the user to read what happened.
@@ -425,6 +458,7 @@ bool Database<T>::teamBattle() {
 	if (battleResult == true)		// if we won, reward us.
 	{
 		cout << "===================Victory!==================\n";
+		srand(time(NULL));
 		int chance = rand() % 100 - 1; // rolling for increased gold and EXP reward.
 									   // considering reducing the reward based on number of knocked out party members...
 		if (chance <= 20) {
@@ -470,6 +504,7 @@ bool Database<T>::teamBattle() {
 	}
 	else {
 		cout << "===================You Lost!==================\n";
+		srand(time(NULL));
 		int chance = rand() % 100 - 1; // rolling for increased gold and EXP reward.
 									   // considering reducing the reward based on number of knocked out party members...
 		if (chance <= 25) {
@@ -523,7 +558,7 @@ void Database<T>::GenerateRandomStatsTeam() //called after heroes are purchased 
 }
 
 template <class T>
-void Database<T>::GenerateRandomEnemyTeam(vector<SmashHero*> EnemyMembers)	// This function is only called in teamBattle() when creating an enemy team.
+void Database<T>::GenerateRandomEnemyTeam(vector<SmashHero*>& EnemyMembers)	// This function is only called in teamBattle() when creating an enemy team.
 {
 	for (int i = 0; i < teamList.size(); i++) {
 		int rngesus = rand() % 100 + 1;
@@ -542,11 +577,11 @@ void Database<T>::GenerateRandomEnemyTeam(vector<SmashHero*> EnemyMembers)	// Th
 
 		//Finding the hero in the hero list and creating it
 		string line;
-		this->heroList.seekg(this->heroList.beg);
-		for (int i = 0; i > rngesus; i++) {
+		this->heroList.seekg(0);
+		for (int i = 0; i < rngesus; i++) {
 			getline(this->heroList, line);
 		}
-		this->heroList.seekg(this->heroList.beg);
+		this->heroList.seekg(0);
 		SmashHero* tempPtr = new SmashHero(line);
 		EnemyMembers.push_back(tempPtr);
 	}

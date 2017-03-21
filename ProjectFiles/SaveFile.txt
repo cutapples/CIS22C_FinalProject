@@ -1,29 +1,32 @@
-0
+10000
 1	2	3	4	5
-0022	Rob	3
-0023	Luigi	3
-0015	Corrin	3
-0025	Robin	3
-0004	Mario	1
-0005	Sonic	1
-0011	Metaknight	3
-0012	Villager	3
-0006	Fox	1
-0007	Ryu	2
-0018	Lucario	3
-0002	Cloud	1
-0019	Yoshi	3
-0020	Pit	3
-0021	Peach	3
-0024	Olimar	3
-0008	Mewtwo	2
-0009	Bayonetta	2
-0003	Sheik	1
-0013	Megaman	3
-0014	Ness	3
-0010	Pikachu	3
-0016	Marth	3
-0001	Fox	1
-0017	Greninja	3
-
-
+5	Sonic	1	
+10	Pikachu	3	
+15	Corrin	3	
+20	Pit	3	
+25	Robin	3	
+25	Robin	3	
+1	Fox	1	
+6	Fox	1	
+11	Metaknight	3	
+16	Marth	3	
+21	Peach	3	
+21	Peach	3	
+55	Young Link	4	
+2	Cloud	1	
+7	Ryu	2	
+12	Villager	3	
+17	Greninja	3	
+22	Rob	3	
+3	Sheik	1	
+8	Mewtwo	2	
+13	Megaman	3	
+13	Megaman	3	
+18	Lucario	3	
+23	Luigi	3	
+28	Wario	3	
+4	Mario	1	
+9	Bayonetta	2	
+14	Ness	3	
+19	Yoshi	3	
+24	Olimar	3	

@@ -1,7 +1,9 @@
-#include <stdlib.h>
+#include <Windows.h>
 #include <ctime>
 #include <iostream>
 #include "SmashHero.h"
+
+using namespace std;
 
 SmashHero::SmashHero(string line) {
 	//The tabs are being found from the input line that we ghet from the file.
@@ -18,6 +20,9 @@ SmashHero::SmashHero(string line) {
 	SmashHero::setPrimaryKey(stoi(primaryKey));
 	SmashHero::setHeroName(heroName);
 	SmashHero::setRarity(stoi(rarity));
+
+	this->Level = 1;
+
 }
 
 ostream& operator<<(ostream& os, SmashHero& hero) {
@@ -35,83 +40,86 @@ ostream& operator<<(ostream& os, SmashHero& hero) {
 
 void SmashHero::GenerateStats() {
 	// automatically generate stats for your acquired heroes when you purchase them based on their rarityIndex.
+	srand(time(NULL));
 	if (rarityIndex == 1) {
 		Level = 1;
 		EXP = 0;
-		maxHP = rand() % 17 - 14;
+		maxHP = (rand() * 257 + 419) % 3 + 14;
 		HP = maxHP;
-		ATK = rand() % 7 - 5;
-		DEF = rand() % 5 - 3;
+		ATK = (rand() * 257 + 419) % 2 + 5;
+		DEF = (rand() * 257 + 419) % 2 + 3;
 	}
 	else if (rarityIndex == 2) {
 		Level = 1;
 		EXP = 0;
-		maxHP = rand() % 22 - 18;
+		maxHP = (rand() * 257 + 419) % 4 + 18;
 		HP = maxHP;
-		ATK = rand() % 10 - 8;
-		DEF = rand() % 8 - 6;
+		ATK = (rand() * 257 + 419) % 2 + 8;
+		DEF = (rand() * 257 + 419) % 2 + 6;
 	}
 	else if (rarityIndex == 3) {
 		Level = 1;
 		EXP = 0;
-		maxHP = rand() % 27 - 23;
+		maxHP = (rand() * 257 + 419) % 4 + 23;
 		HP = maxHP;
-		ATK = rand() % 14 - 11;
-		DEF = rand() % 11 - 9;
+		ATK = (rand() * 257 + 419) % 3 + 11;
+		DEF = (rand() * 257 + 419) % 2 + 9;
 	}
 	else if (rarityIndex == 4) {
 		Level = 1;
 		EXP = 0;
-		maxHP = rand() % 32 - 28;
+		maxHP = (rand() * 257 + 419) % 4 + 28;
 		HP = maxHP;
-		ATK = rand() % 18 - 15;
-		DEF = rand() % 15 - 12;
+		ATK = (rand() * 257 + 419) % 3 + 15;
+		DEF = (rand() * 257 + 419) % 3 + 12;
 	}
 }
 
 void SmashHero::AdjustDifficulty(int totalLevels) {
 	// Adjusts difficulty by scaling HP, ATK and DEF of enemy team based on totalLevels of your team.
+	Sleep(10);
+	srand(time(NULL));
 	if (totalLevels <= 15) {
-		Level = rand() % 5 - 1;
-		maxHP = rand() % 20 - 10;
+		Level = (rand() * 257 + 419) % 4 + 1;
+		maxHP = (rand() * 257 + 419) % 10 + 10;
 		HP = maxHP;
-		ATK = rand() % 6 - 3;
-		DEF = rand() % 5 - 3;
+		ATK = (rand() * 257 + 419) % 3 + 3;
+		DEF = (rand() * 257 + 419) % 2 + 3;
 	}
 	else if (totalLevels > 15 && totalLevels <= 50) {
-		Level = rand() % 15 - 5;
-		maxHP = rand() % 40 - 20;
+		Level = (rand() * 257 + 419) % 10 + 5;
+		maxHP = (rand() * 257 + 419) % 20 + 20;
 		HP = maxHP;
-		ATK = rand() % 12 - 7;
-		DEF = rand() % 8 - 6;
+		ATK = (rand() * 257 + 419) % 5 + 7;
+		DEF = (rand() * 257 + 419) % 2 + 6;
 	}
 	else if (totalLevels > 50 && totalLevels <= 100) {
-		Level = rand() % 25 - 15;
-		maxHP = rand() % 60 - 40;
+		Level = (rand() * 257 + 419) % 10 + 15;
+		maxHP = (rand() * 257 + 419) % 20 + 40;
 		HP = maxHP;
-		ATK = rand() % 20 - 10;
-		DEF = rand() % 13 - 8;
+		ATK = (rand() * 257 + 419) % 10 + 10;
+		DEF = (rand() * 257 + 419) % 5 + 8;
 	}
 	else if (totalLevels > 100 && totalLevels <= 300) {
-		Level = rand() % 50 - 25;
-		maxHP = rand() % 120 - 60;
+		Level = (rand() * 257 + 419) % 25 + 25;
+		maxHP = (rand() * 257 + 419) % 60 + 60;
 		HP = maxHP;
-		ATK = rand() % 30 - 25;
-		DEF = rand() % 18 - 15;
+		ATK = (rand() * 257 + 419) % 15 + 25;
+		DEF = (rand() * 257 + 419) % 3 + 15;
 	}
 	else if (totalLevels > 300 && totalLevels <= 600) {
-		Level = rand() % 100 - 50;
-		maxHP = rand() % 200 - 150;
+		Level = (rand() * 257 + 419) % 50 + 50;
+		maxHP = (rand() * 257 + 419) % 50 + 150;
 		HP = maxHP;
-		ATK = rand() % 50 - 30;
-		DEF = rand() % 25 - 18;
+		ATK = (rand() * 257 + 419) % 20 + 30;
+		DEF = (rand() * 257 + 419) % 7 + 18;
 	}
 	else {
-		Level = rand() % 300 - 100;
-		maxHP = rand() % 500 - 200;
+		Level = (rand() * 257 + 419) % 200 + 100;
+		maxHP = (rand() * 257 + 419) % 300 + 200;
 		HP = maxHP;
-		ATK = rand() % 80 - 60;
-		DEF = rand() % 35 - 28;
+		ATK = (rand() * 257 + 419) % 20 + 60;
+		DEF = (rand() * 257 + 419) % 7 + 28;
 	}
 }
 
@@ -149,8 +157,9 @@ bool SmashHero::isKnockedOut() {
 
 bool SmashHero::didWeHit() {
 	// Dodge mechanic for us.
+	Sleep(10);
 	srand(time(NULL));
-	int chance = rand() % 100 - 1;
+	int chance = (rand() * 257 + 419) % 100 - 1;
 	if (chance >= 20) {
 		return true;
 	}
@@ -161,8 +170,9 @@ bool SmashHero::didWeHit() {
 
 bool SmashHero::didTheyHit() {
 	// Dodge mechanic for enemy team.
+	Sleep(10);
 	srand(time(NULL));
-	int chance = (rand() % 100 - 1) - 10;
+	int chance = ((rand() * 257 + 419) % 100 - 1) - 10;
 	if (chance >= 30) {
 		return true;
 	}
@@ -172,6 +182,7 @@ bool SmashHero::didTheyHit() {
 }
 
 void SmashHero::setEXP(int amount) {
+	srand(time(NULL));
 	EXP += amount;
 	if (EXP >= 100) // level up and handle increase of stats and printing the relevant information for the user.
 	{

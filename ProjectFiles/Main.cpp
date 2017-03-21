@@ -25,7 +25,7 @@ int main() {
 	displayLoadingScreen();
 	cout << "Initializing database...\n";
 	Database<SmashHero> database;
-	cout << "Database successfully intialized.\n";
+	cout << "Database successfully intialized.\n\n";
 
 	system("pause");
 
@@ -42,21 +42,27 @@ int main() {
 
 		switch (userChoice) {
 		case 1:
+			system("cls");
 			battleMenu(database);
 			break;
 		case 2:
+			system("cls");
 			purchaseMenu(database);
 			break;
 		case 3:
+			system("cls");
 			sellMenu(database);
 			break;
 		case 4:
+			system("cls");
 			heroListMenu(database);
 			break;
 		case 5:	
+			system("cls");
 			teamMenu(database);
 			break;
 		case 6:
+			system("cls");
 			optionsMenu(database);
 			break;
 		case 7:
@@ -112,10 +118,17 @@ Display the new hero
 */
 void purchaseMenu(Database<SmashHero>& database) {
 	cout << "====================Gachapon=====================" << endl;
-	cout << "Key\tName\tRarity" << endl;
-	SmashHero* newHero = database.purchaseNewHero(100);
-	cout << *newHero;
-	cout << "\nYou now have " << database.getGold() << " gold.\n";
+	int goldCost = 1000;
+	if (database.getGold() >= goldCost){
+		cout << "Key\tName\tRarity" << endl;
+		SmashHero* newHero = database.purchaseNewHero(100);
+		cout << *newHero;
+		cout << "\nYou now have " << database.getGold() << " gold.\n\n";
+	}
+	else {
+		cout << "You do not have enough gold to use the Gachapon!\n";
+		cout << "\nYou currently have " << database.getGold() << " gold.\n\n";
+	}
 }
 
 /*
@@ -147,6 +160,7 @@ Database::displayHeroList()
 */
 void heroListMenu(Database<SmashHero>& database) {
 	database.displayHeroList();
+	cout << endl << endl;
 }
 
 /*
@@ -158,6 +172,7 @@ Prompt user for a primary key they own to be put into that slot
 Swap Team Member function call
 */
 void teamMenu(Database<SmashHero>& database) {
+	cout << "====================Team Menu====================" << endl;
 	database.displayTeam();
 	cout << "\nWhich slot would you like to swap?(6 for exit)";
 	int slotChoice;
@@ -170,6 +185,7 @@ void teamMenu(Database<SmashHero>& database) {
 	cin >> swapKey;
 	cout << "\n\nYou swapped in this hero into slot " << slotChoice << "!\n";
 	database.displayHero(swapKey);
+	cout << endl << endl;
 	database.swapTeamMember(slotChoice, swapKey);
 }
 
