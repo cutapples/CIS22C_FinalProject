@@ -67,7 +67,7 @@ public:
 	void LoseHP(int attackpower);
 	//void setHeroMaxHP(int newmaxHP);
 	int getHeroMaxHP() { return this->maxHP; };
-	void setTurnOrder() { this->TurnOrder = rand() % 10 + 1; };
+	void setTurnOrder(int i) { this->TurnOrder = i; };
 	int getTurnOrder() { return this->TurnOrder; };
 	//void setAttackPower(int newATK);
 	int getAttackPower() { return this->ATK; };
