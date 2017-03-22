@@ -100,7 +100,7 @@ Display gold added and increased stats?
 */
 void battleMenu(Database<SmashHero>& database) 
 {
-	bool battle = database.teamBattle();
+	database.teamBattle();
 }
 
 /*
