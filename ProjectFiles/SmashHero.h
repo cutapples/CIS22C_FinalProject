@@ -4,12 +4,12 @@
 
 using namespace std;
 
-class SmashHero {
+class SmashHero 
+{
 private:
 	int primaryKey;
 	string heroName;
 	int rarityIndex;
-
 	//Extra Stats
 	int HP;
 	int maxHP;
@@ -18,7 +18,6 @@ private:
 	int DEF;
 	int EXP;
 	int Level;
-
 public:
 	SmashHero() {};
 	SmashHero(string line);
@@ -31,30 +30,30 @@ public:
 	void setHeroName(string heroName) { this->heroName = heroName; };
 	void setRarity(int rarityIndex) { this->rarityIndex = rarityIndex; };
 
-	//Operator Overloading
+	///////Operator Overloading
 	friend ostream& operator<<(ostream& os, SmashHero& hero);
-
-	friend bool operator>(SmashHero hero, int userKey) {
+	friend bool operator>(SmashHero hero, int userKey) 
+	{
 		return (hero.getPrimaryKey() > userKey);
 	};
-
-	friend bool operator<(SmashHero hero, int userKey) {
+	friend bool operator<(SmashHero hero, int userKey) 
+	{
 		return (hero.getPrimaryKey() < userKey);
 	};
-
-	friend bool operator==(SmashHero hero, int userKey) {
+	friend bool operator==(SmashHero hero, int userKey) 
+	{
 		return (hero.getPrimaryKey() == userKey);
 	};
-
-	friend bool operator>(SmashHero hero, SmashHero hero2) {
+	friend bool operator>(SmashHero hero, SmashHero hero2) 
+	{
 		return (hero.getPrimaryKey() > hero2.getPrimaryKey());
 	};
-
-	friend bool operator<(SmashHero hero, SmashHero hero2) {
+	friend bool operator<(SmashHero hero, SmashHero hero2) 
+	{
 		return (hero.getPrimaryKey() < hero2.getPrimaryKey());
 	};
-
-	friend bool operator==(SmashHero hero, SmashHero hero2) {
+	friend bool operator==(SmashHero hero, SmashHero hero2) 
+	{
 		return (hero.getPrimaryKey() == hero2.getPrimaryKey());
 	};
 
@@ -77,7 +76,6 @@ public:
 	bool didWeHit();
 	bool didTheyHit();
 	void setEXP(int amount);
-
 };
 
 #endif SMASHHERO_H
