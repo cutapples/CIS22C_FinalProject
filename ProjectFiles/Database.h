@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <conio.h>
 #include <stdio.h>
+#include <algorithm>
 
 #include "HashTable.h"
 #include "BST.h"
@@ -47,8 +48,7 @@ public:
 	SmashHero* getHero(int primaryKey);
 	int getGold() { return this->gold; };
 
-	bool teamBattle();
-	bool AttackTarget(int j, int k, vector <SmashHero*> Attacker, vector <SmashHero*> Target);
+	void teamBattle();
 	void healUs();
 	void GenerateRandomStatsTeam();
 	void GenerateRandomEnemyTeam(vector<SmashHero*>& EnemyMembers);
@@ -338,7 +338,7 @@ SmashHero* Database<T>::getHero(int primaryKey)
 }
 
 template <class T>
-bool Database<T>::teamBattle() 
+void Database<T>::teamBattle() 
 {
 	///////////////// Initialize your party and the enemy's into vectors for ease of use.
 	vector <SmashHero*> Members;
@@ -387,119 +387,126 @@ bool Database<T>::teamBattle()
 					if (Members[j]->isKnockedOut() == false)				// if Member j is not knocked out, proceed with picking a target.
 					{
 						//isAttackSuccessful = false;
-						bool flag = false;
+						bool isAttackSuccessful = false;
 						do                                                  // exits the do while loop when we have made a successful attack.
 						{
 							//
 							//int k = ((rand() * ((i + 1) * 257)* ((j + 1) * 419))) % EnemyMembers.size();		// randomize its target.
 							//int k = rand() % EnemyMembers.size();
 							//////////////////////////// Randomizes the target using preset values to avoid using rand() and looping k issue.
-							int k = teamList.size();
-							if (EnemyMembers[k - 1]->isKnockedOut() == false)
+							int k = rand() % (teamList.size() - 1) - 1;
+							if (k < 0)
 							{
-								k = 3;
-								bool flag = AttackTarget(j, k, Members, EnemyMembers);
+								k = 0;
 							}
-							else if (EnemyMembers[k - 2]->isKnockedOut() == false && k != 3)
-							{
-								k = 1;
-								bool flag = AttackTarget(j, k, Members, EnemyMembers);
-							}
-							else if (EnemyMembers[k - 3]->isKnockedOut() == false && k != 3 && k != 1)
-							{
-								k = 4;
-								bool flag = AttackTarget(j, k, Members, EnemyMembers);
-							}
-							else if (EnemyMembers[k - 4]->isKnockedOut() == false && k != 3 && k != 1 && k != 4)
-							{
-								k = 2;
-								bool flag = AttackTarget(j, k, Members, EnemyMembers);
-							}
-							else if (EnemyMembers[k]->isKnockedOut() == false && k != 3 && k != 1 && k != 4 && k != 2)
-							{
-								k = 5;
-								bool flag = AttackTarget(j, k, Members, EnemyMembers);
-							}
-							else
-							{
-								int done = 0;
-								for (int i = 1; i < teamList.size(); i++)
-								{
-									if (EnemyMembers[i]->isKnockedOut())
-									{
-										done++;
-									}
-								}
-								if (done == teamList.size())
-								{
-									flag = true;
-								}
-							}
-							//if (EnemyMembers[k]->isKnockedOut() == false)	// checks if the target is already knocked out. If not, then search for another target.
+							//if (EnemyMembers[k]->isKnockedOut() == false)
 							//{
-							//	if (Members[j]->didWeHit() == false)		// Hit chance mechanic
-							//	{
-							//		cout << "Your " << Members[j]->getHeroName() << " missed its attack!" << endl << endl;
-							//		isAttackSuccessful = true;				// Target dodged the attack so end turn for Member j.
-							//	}
-							//	else 
-							//	{
-							//		int defensepower = EnemyMembers[k]->getDefensePower();
-							//		attackpower = attackpower - defensepower;
-							//		///////////////////////////////////// Graze damage mechanic in case attackpower became 0 or negative after subtracting defensepower from it.
-							//		if (attackpower <= 0) 
-							//		{
-							//			// These values are taken straight from the AdjustDifficulty() from SmashHero.h
-							//			if (Members[j]->getLevel() <= 15) 
-							//			{
-							//				attackpower = ((rand() * ((i + 1) * 257)* ((j + 1) * 419))) % 2 + 3;
-							//			}
-							//			else if (Members[j]->getLevel() > 15 && Members[j]->getLevel() <= 50) 
-							//			{
-							//				attackpower = ((rand() * ((i + 1) * 257)* ((j + 1) * 419))) % 2 + 6;
-							//			}
-							//			else if (Members[j]->getLevel() > 50 && Members[j]->getLevel() <= 100) 
-							//			{
-							//				attackpower = ((rand() * ((i + 1) * 257)* ((j + 1) * 419))) % 5 + 8;
-							//			}
-							//			else if (Members[j]->getLevel() > 100 && Members[j]->getLevel() <= 300) 
-							//			{
-							//				attackpower = ((rand() * ((i + 1) * 257)* ((j + 1) * 419))) % 3 + 15;
-							//			}
-							//			else if (Members[j]->getLevel() > 300 && Members[j]->getLevel() <= 600) 
-							//			{
-							//				attackpower = ((rand() * ((i + 1) * 257)* ((j + 1) * 419))) % 7 + 18;
-							//			}
-							//			else
-							//			{
-							//				attackpower = ((rand() * ((i + 1) * 257)* ((j + 1) * 419))) % 7 + 28;
-							//			}
-							//		}
-							//		EnemyMembers[k]->LoseHP(attackpower);	// and then attack that target.
-							//		cout << "Your " << Members[j]->getHeroName() << " attacked the enemy's " << EnemyMembers[k]->getHeroName() << " for " << attackpower << endl;
-							//		////////////////////////////////////// print out the resultant HP of the target or if its knocked out.
-							//		if (EnemyMembers[k]->isKnockedOut() == false) { cout << "Their " << EnemyMembers[k]->getHeroName() << " is now at HP: " << EnemyMembers[k]->getHeroHP() << "/" << EnemyMembers[k]->getHeroMaxHP() << endl << endl; }
-							//		else if (EnemyMembers[k]->isKnockedOut() == true) { cout << "Their " << EnemyMembers[k]->getHeroName() << " has been knocked out!" << endl << endl; }
-							//		isAttackSuccessful = true;
-							//	}
+							//	k = 4;
+							//}
+							//else if (EnemyMembers[k - 1]->isKnockedOut() == false)
+							//{
+							//	k = 3;
+							//}
+							//else if (EnemyMembers[k - 2]->isKnockedOut() == false)
+							//{
+							//	k = 2;
+							//}
+							//else if (EnemyMembers[k - 3]->isKnockedOut() == false)
+							//{
+							//	k = 1;
+							//}
+							////&& k != 4 && k != 3 && k != 2 && k != 1
+							//else if (EnemyMembers[0]->isKnockedOut() == false)
+							//{
+							//	k = 0;
 							//}
 							//else
 							//{
-							//	int error = 0;
-							//	for (int p = 1; p < teamList.size(); p++)
+							//	int done = 0;
+							//	for (int i = 1; i < teamList.size(); i++)
 							//	{
-							//		if (EnemyMembers[p]->isKnockedOut())
+							//		if (EnemyMembers[i]->isKnockedOut())
 							//		{
-							//			error++;
+							//			done++;
 							//		}
 							//	}
-							//	if (error == teamList.size())
+							//	if (done == teamList.size())
 							//	{
+							//		isAttackSuccessful = true;
 							//		i = 11;
 							//		j = 5;
 							//	}
 							//}
-						} while (flag != false);
+							if (EnemyMembers[k]->isKnockedOut() == false)	// checks if the target is already knocked out. If not, then search for another target.
+							{
+								if (Members[j]->didWeHit() == false)		// Hit chance mechanic
+								{
+									cout << "Your " << Members[j]->getHeroName() << " missed its attack!" << endl << endl;
+									isAttackSuccessful = true;				// Target dodged the attack so end turn for Member j.
+								}
+								else 
+								{
+									int attackpower = Members[j]->getAttackPower();
+									int defensepower = EnemyMembers[k]->getDefensePower();
+									attackpower = attackpower - defensepower;
+									///////////////////////////////////// Graze damage mechanic in case attackpower became 0 or negative after subtracting defensepower from it.
+									if (attackpower <= 0) 
+									{
+										// These values are taken straight from the AdjustDifficulty() from SmashHero.h
+										if (Members[j]->getLevel() <= 15) 
+										{
+											attackpower = ((rand() * ((i + 1) * 257)* ((j + 1) * 419))) % 2 + 3;
+										}
+										else if (Members[j]->getLevel() > 15 && Members[j]->getLevel() <= 50) 
+										{
+											attackpower = ((rand() * ((i + 1) * 257)* ((j + 1) * 419))) % 2 + 6;
+										}
+										else if (Members[j]->getLevel() > 50 && Members[j]->getLevel() <= 100) 
+										{
+											attackpower = ((rand() * ((i + 1) * 257)* ((j + 1) * 419))) % 5 + 8;
+										}
+										else if (Members[j]->getLevel() > 100 && Members[j]->getLevel() <= 300) 
+										{
+											attackpower = ((rand() * ((i + 1) * 257)* ((j + 1) * 419))) % 3 + 15;
+										}
+										else if (Members[j]->getLevel() > 300 && Members[j]->getLevel() <= 600) 
+										{
+											attackpower = ((rand() * ((i + 1) * 257)* ((j + 1) * 419))) % 7 + 18;
+										}
+										else
+										{
+											attackpower = ((rand() * ((i + 1) * 257)* ((j + 1) * 419))) % 7 + 28;
+										}
+									}
+									EnemyMembers[k]->LoseHP(attackpower);	// and then attack that target.
+									cout << "Your " << Members[j]->getHeroName() << " attacked the enemy's " << EnemyMembers[k]->getHeroName() << " for " << attackpower << endl;
+									////////////////////////////////////// print out the resultant HP of the target or if its knocked out.
+									if (EnemyMembers[k]->isKnockedOut() == false) { cout << "Their " << EnemyMembers[k]->getHeroName() << " is now at HP: " << EnemyMembers[k]->getHeroHP() << "/" << EnemyMembers[k]->getHeroMaxHP() << endl << endl; }
+									else if (EnemyMembers[k]->isKnockedOut() == true) { cout << "Their " << EnemyMembers[k]->getHeroName() << " has been knocked out!" << endl << endl; }
+									isAttackSuccessful = true;
+								}
+							}
+							else
+							{
+								isAttackSuccessful = true;
+							}
+							/*else
+							{
+								int error = 0;
+								for (int p = 1; p < teamList.size(); p++)
+								{
+									if (EnemyMembers[p]->isKnockedOut())
+									{
+										error++;
+									}
+								}
+								if (error == teamList.size())
+								{
+									i = 11;
+									j = 5;
+								}
+							}*/
+						} while (isAttackSuccessful != true);
 					}
 				}
 				else if (EnemyMembers[j]->getTurnOrder() == i)				// if EnemyMember j has Turn Order i, then proceed with combat.
@@ -507,34 +514,34 @@ bool Database<T>::teamBattle()
 					if (EnemyMembers[j]->isKnockedOut() == false)			// if EnemyMember j is not knocked out, proceed with picking a target.
 					{
 						//isAttackSuccessful = false;
-						bool flag = false;
+						bool isAttackSuccessful = false;
 						do                                                  // exits the do while loop when the enemy have made a successful attack.
 						{
-							int k = teamList.size();
-							if (Members[k - 1]->isKnockedOut() == false)
+							//int k = teamList.size() - 1;
+							int k = rand() % (teamList.size() - 1) - 1;
+							if (k < 0)
 							{
-								k = 3;
-								bool flag = AttackTarget(j, k, EnemyMembers, Members);
+								k = 0;
 							}
-							else if (Members[k - 2]->isKnockedOut() == false && k != 3)
-							{
-								k = 1;
-								bool flag = AttackTarget(j, k, EnemyMembers, Members);
-							}
-							else if (Members[k - 3]->isKnockedOut() == false && k != 3 && k != 1)
+							/*if (Members[k - 1]->isKnockedOut() == false)
 							{
 								k = 4;
-								bool flag = AttackTarget(j, k, EnemyMembers, Members);
 							}
-							else if (Members[k - 4]->isKnockedOut() == false && k != 3 && k != 1 && k != 4)
+							else if (Members[k - 2]->isKnockedOut() == false)
+							{
+								k = 3;
+							}
+							else if (Members[k - 3]->isKnockedOut() == false)
 							{
 								k = 2;
-								bool flag = AttackTarget(j, k, EnemyMembers, Members);
 							}
-							else if (Members[k]->isKnockedOut() == false && k != 3 && k != 1 && k != 4 && k != 2)
+							else if (Members[k - 4]->isKnockedOut() == false)
 							{
-								k = 5;
-								bool flag = AttackTarget(j, k, EnemyMembers, Members);
+								k = 1;
+							}
+							else if (Members[0]->isKnockedOut() == false)
+							{
+								k = 0;
 							}
 							else
 							{
@@ -548,35 +555,44 @@ bool Database<T>::teamBattle()
 								}
 								if (done == teamList.size())
 								{
-									flag = true;
+									isAttackSuccessful = true;
+									i = 11;
+									j = 5;
+								}
+							}*/
+							int attackpower = EnemyMembers[j]->getAttackPower();// get its attack power
+							//int k = ((rand() * ((i + 1) * 257)* ((j + 1) * 419))) % teamList.size();			// randomize its target.
+							k = rand() % teamList.size();
+							if (Members[k]->isKnockedOut() == false)				// checks if the target is already knocked out. If not, then search for another target.
+							{
+								if (!EnemyMembers[j]->didTheyHit())			// Hit chance mechanic
+								{
+									cout << "The enemy's " << EnemyMembers[j]->getHeroName() << " missed its attack!" << endl << endl;
+									isAttackSuccessful = true;				// Target dodged the attack so end turn for EnemyMember j.
+								}
+								else 
+								{
+									Members[k]->LoseHP(attackpower);		// and then attack that target.
+									cout << "The enemy's " << EnemyMembers[j]->getHeroName() << " attacked your " << Members[k]->getHeroName() << " for " << attackpower << endl;
+									////////////////////////////////////// print out the resultant HP of the target or if its knocked out.
+									if (Members[k]->isKnockedOut() == false) { cout << "Our " << Members[k]->getHeroName() << " is now at HP: " << Members[k]->getHeroHP() << "/" << Members[k]->getHeroMaxHP() << endl << endl; }
+									else if (Members[k]->isKnockedOut() == true) { cout << "Our " << Members[k]->getHeroName() << " has been knocked out!" << endl << endl; }
+									isAttackSuccessful = true;
 								}
 							}
-							//int attackpower = EnemyMembers[j]->getAttackPower();// get its attack power
-							////int k = ((rand() * ((i + 1) * 257)* ((j + 1) * 419))) % teamList.size();			// randomize its target.
-							//int k = rand() % teamList.size();
-							//if (Members[k]->isKnockedOut() == false)				// checks if the target is already knocked out. If not, then search for another target.
-							//{
-							//	if (!EnemyMembers[j]->didTheyHit())			// Hit chance mechanic
-							//	{
-							//		cout << "The enemy's " << EnemyMembers[j]->getHeroName() << " missed its attack!" << endl << endl;
-							//		isAttackSuccessful = true;				// Target dodged the attack so end turn for EnemyMember j.
-							//	}
-							//	else 
-							//	{
-							//		Members[k]->LoseHP(attackpower);		// and then attack that target.
-							//		cout << "The enemy's " << EnemyMembers[j]->getHeroName() << " attacked your " << Members[k]->getHeroName() << " for " << attackpower << endl;
-							//		////////////////////////////////////// print out the resultant HP of the target or if its knocked out.
-							//		if (Members[k]->isKnockedOut() == false) { cout << "Our " << Members[k]->getHeroName() << " is now at HP: " << Members[k]->getHeroHP() << "/" << Members[k]->getHeroMaxHP() << endl << endl; }
-							//		else if (Members[k]->isKnockedOut() == true) { cout << "Our " << Members[k]->getHeroName() << " has been knocked out!" << endl << endl; }
-							//		isAttackSuccessful = true;
-							//	}
-							//}
-						} while (flag != false);
+							else
+							{
+								isAttackSuccessful = true;
+							}
+						} while (isAttackSuccessful != true);
 					}
 				}
 			}
 		}
-		////////////////// now check which team won by counting knocked out members.
+		///////////////////////////////////////////////////////////////////////////////////////////////
+		///////////////////////////////////////////////////////////////////////////////////////////////
+		////////////////// now check which team won by counting knocked out members.///////////////////
+		///////////////////////////////////////////////////////////////////////////////////////////////
 		int knockedout = 0;
 		int enemyknockedout = 0;
 		for (int i = 0; i < teamList.size(); i++) 
@@ -665,7 +681,7 @@ bool Database<T>::teamBattle()
 				}
 			}
 		}
-		return battleResult;
+		//return battleResult;
 	}
 	else 
 	{
@@ -702,59 +718,7 @@ bool Database<T>::teamBattle()
 				}
 			}
 		}
-		return battleResult;
-	}
-}
-
-template<class T>
-bool Database<T>::AttackTarget(int j, int k, vector <SmashHero*> Attacker, vector <SmashHero*> Target)
-{
-	if (Attacker[j]->didWeHit() == false)		// Hit chance mechanic
-	{
-		cout << "Your " << Attacker[j]->getHeroName() << " missed its attack on " << Target[k]->getHeroName() << endl;
-		//isAttackSuccessful = true;				// Target dodged the attack so end turn for Member j.
-		return false;
-	}
-	else
-	{
-		int attackpower = Attacker[j]->getAttackPower();	// get its attack power
-		int defensepower = Target[k]->getDefensePower();
-		attackpower = attackpower - defensepower;
-		///////////////////////////////////// Graze damage mechanic in case attackpower became 0 or negative after subtracting defensepower from it.
-		//if (attackpower <= 0)
-		//{
-		//	// These values are taken straight from the AdjustDifficulty() from SmashHero.h
-		//	if (Members[j]->getLevel() <= 15)
-		//	{
-		//		attackpower = ((rand() * ((i + 1) * 257)* ((j + 1) * 419))) % 2 + 3;
-		//	}
-		//	else if (Members[j]->getLevel() > 15 && Members[j]->getLevel() <= 50)
-		//	{
-		//		attackpower = ((rand() * ((i + 1) * 257)* ((j + 1) * 419))) % 2 + 6;
-		//	}
-		//	else if (Members[j]->getLevel() > 50 && Members[j]->getLevel() <= 100)
-		//	{
-		//		attackpower = ((rand() * ((i + 1) * 257)* ((j + 1) * 419))) % 5 + 8;
-		//	}
-		//	else if (Members[j]->getLevel() > 100 && Members[j]->getLevel() <= 300)
-		//	{
-		//		attackpower = ((rand() * ((i + 1) * 257)* ((j + 1) * 419))) % 3 + 15;
-		//	}
-		//	else if (Members[j]->getLevel() > 300 && Members[j]->getLevel() <= 600)
-		//	{
-		//		attackpower = ((rand() * ((i + 1) * 257)* ((j + 1) * 419))) % 7 + 18;
-		//	}
-		//	else
-		//	{
-		//		attackpower = ((rand() * ((i + 1) * 257)* ((j + 1) * 419))) % 7 + 28;
-		//	}
-		//}
-		Target[k]->LoseHP(attackpower);	// and then attack that target.
-		cout << "Your " << Attacker[j]->getHeroName() << " attacked the enemy's " << Target[k]->getHeroName() << " for " << attackpower << endl;
-		////////////////////////////////////// print out the resultant HP of the target or if its knocked out.
-		if (Target[k]->isKnockedOut() == false) { cout << "Their " << Target[k]->getHeroName() << " is now at HP: " << Target[k]->getHeroHP() << "/" << Target[k]->getHeroMaxHP() << endl << endl; }
-		else if (Target[k]->isKnockedOut() == true) { cout << "Their " << Target[k]->getHeroName() << " has been knocked out!" << endl << endl; }
-		return true;
+		//return battleResult;
 	}
 }
 
