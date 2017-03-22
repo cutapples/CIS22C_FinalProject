@@ -7,6 +7,7 @@
 #include <fstream>
 #include <vector>
 #include <stdlib.h>
+#include <windows.h>
 
 #include "HashTable.h"
 #include "BST.h"
@@ -368,7 +369,11 @@ void Database<T>::teamBattle()
 		{
 			if (Members[i] != NULL) 
 			{	
-				cout << "\t" << Members[i]->getHeroName() << " HP: " << Members[i]->getHeroHP() << "/" << Members[i]->getHeroMaxHP();
+				//cout << "\t" << Members[i]->getHeroName() << " HP: " << Members[i]->getHeroHP() << "/" << Members[i]->getHeroMaxHP();
+				cout << "\t" << Members[i]->getHeroName() << " HP: ";
+				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED, FOREGROUND_INTENSITY);
+				cout << Members[i]->getHeroHP() << "/" << Members[i]->getHeroMaxHP();
+				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_WHITE, FOREGROUND_INTENSITY);
 			}
 			if (EnemyMembers[i] != NULL) 
 			{
